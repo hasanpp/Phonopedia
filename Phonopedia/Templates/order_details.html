@@ -1,0 +1,231 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Order details {% endblock %}
+{% block content %}
+<style>
+    .invoice-card {
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .invoice-header h2 {
+        margin: 0;
+    }
+    .invoice-header .btn {
+        margin-left: 10px;
+    }
+    .invoice-details {
+        margin-top: 20px;
+    }
+    .btn-danger {
+        color: #ffffff;
+        background-color: red;
+        border: red 1px solid;
+    }
+    .invoice-header { text-align: center; }
+    .invoice-details { margin-top: 20px; }
+    .invoice-details th, .invoice-details td { padding: 8px; border: 1px solid #ddd; }
+    .total { text-align: right; margin-top: 20px; }
+</style>
+
+
+<!-- All Products -->
+<br><br><br>
+<div class="container mt-5">
+    <div class="invoice-card" style="display: flex; flex-wrap: wrap;">
+        <img src="{{order_item.variant.image.url}}" style="width: 28%;">
+        <div>
+        <div class="invoice-header">
+            <h2>{{order_item.variant.product.name}}</h2>
+            <div>
+                {% if order_item.status == 'delivered'%}
+                    <a class="btn btn-primary">Return</a>
+                    <a class="btn btn-secondary" href="{% url 'generate_invoice_pdf' order_item.id %}">Invoice</a>
+                {% endif %}
+                {% if order_item.status != 'delivered'%}
+                {% if order_item.status != 'cancelled' %}
+                    <a class="btn btn-danger"  id="cancel_order">cancel order</a>
+                {% endif %}
+                {% if order_item.order.pyment_status == 'pending' and order_item.order.pyment_method == 'Razorpay'%}
+                    <a class="btn btn-secondary" id="retry_Payment">Retry Payment</a>
+                {% endif %}
+                {% endif%}
+            </div>
+        </div>
+        <div class="invoice-details">
+            <p><strong>Unit Price:</strong> ₹ {{order_item.unit_price}}</p>
+            <p><strong>Quantity:</strong>  {{order_item.quantity}}</p>
+            <p><strong>Total price:</strong> ₹ {{order_item.price}}</p>
+            <p><strong>Disscount:</strong>- ₹ {{order_item.order.discount}}</p>
+            <p><strong>Buyer:</strong> {{order_item.order.delivery_address.name}}</p>
+            <p><strong>Address:</strong> {{order_item.order.delivery_address.house_name}}, {{order_item.order.delivery_address.road}}, 
+                {{order_item.order.delivery_address.place}}, {{order_item.order.delivery_address.district}}, {{order_item.order.delivery_address.state}}, India</p>
+            <p><strong>Order placed on:</strong> {{order_item.order.order_date}}</p>
+            <p><strong>Order status:</strong> {{order_item.status}}</p>
+            <p><strong>Payment option:</strong> {{order_item.order.pyment_method}}</p>
+            <p><strong>Payment status:</strong> {{order_item.order.pyment_status}}</p>
+            {% if order_item.status != 'delivered'%}
+            <p><strong>Order will be deliverd befor :</strong> {{order_item.order.delivery_date}}</p>
+            {%endif%}
+        </div></div>
+    </div>
+</div>
+<br><br><br><br><br>
+
+<!-- javascript -->
+
+<script>
+    var MenuItems = document.getElementById("MenuItems");
+    MenuItems.style.maxHeight = "0px";
+    function menutoggle() {
+        if (MenuItems.style.maxHeight == "0px") {
+            MenuItems.style.maxHeight = "200px"
+        }
+        else {
+            MenuItems.style.maxHeight = "0px"
+        }
+    }
+</script>
+
+
+
+
+<script>
+    document.getElementById('cancel_order').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to cancel this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'No, go back!',
+            cancelButtonText: 'yse, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Toastify({
+                    text: "The action cancel.",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "green",
+                    stopOnFocus: true,
+                }).showToast();
+    
+                // Perform the action (e.g., add to wishlist)
+            } else {
+                
+                //url: "{% url 'cancel_order' order_item.id %}",
+                
+                window.location.href = '/cancel_order/{{order_item.id}}'
+                Toastify({
+                    text: "order canceled.",
+                    duration: 100000000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "orange",
+                    stopOnFocus: true,
+                }).showToast();
+            }
+        });
+    });
+    
+</script>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('retry_Payment').onclick = function(e) {
+        e.preventDefault();
+
+        amount = ({{order_item.order.total}} + 50 ) *100;
+        order_id = {{order_item.order.id}}
+        var options = {
+            "key": "rzp_test_GX8eRsnEDJKrzD",
+            "amount": amount, 
+            "currency": "INR",
+            "name": "Phonopedia",
+            "description": "Purchase Description",
+            "image": "{% static 'images/logo-small.png' %}",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response) {
+                
+
+                $.ajax({
+                    url: "{% url 'retry_Payment' %}",
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        pyst: 'done', // Set order status as 'done'
+                        order_id: order_id, // Set order status as 'done'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('.payment-options').css("display:none;");
+                            window.location.href = "{% url 'susses' %}";
+                        } else if (response.status === 'unauthenticated') {
+                            alert('Please sign in to place an order.');
+                        }
+                    }
+                });
+            },
+            "prefill": {
+                "name": "{{ user.first_name }} {{ user.last_name }}",
+                "email": "{{ user.email }}",
+                "contact": "{{ user.phone }}"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    
+        // Handle payment failure
+        rzp1.on('payment.failed', function (response) {
+            
+            var save_address = 'yes';
+
+            if ($('#save_address').is(':checked')) {
+                save_address = 'yes';
+            } else {
+                save_address = 'no';
+            }
+            
+            
+
+            $.ajax({
+                url: "{% url 'retry_Payment' %}",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    pyst: 'pending',
+                    order_id: order_id, // Set order status as 'done'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('.payment-options').css("display:none;");
+                        window.location.href = "{% url 'failed' %}";
+                    } else if (response.status === 'unauthenticated') {
+                        alert('Please sign in to place an order.');
+                    }
+                }
+            });
+        });
+
+        
+    }
+</script>
+
+
+{% endblock %}

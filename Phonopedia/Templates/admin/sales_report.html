@@ -1,0 +1,365 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Sales list{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Sales List</h4>
+                <h6>Manage your sales</h6>
+            </div>
+            <!-- <div class="page-btn">
+                <a href="add-sales.html" class="btn btn-added"><img src="{% static 'img_admin/icons/plus.svg' %}" alt="img"
+                        class="me-1">Add Sales</a>
+            </div> -->
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-top">
+                    <div class="search-set">
+                        <div class="search-path">
+                            <a class="btn btn-filter" id="filter_search">
+                                <img src="{% static 'img_admin/icons/filter.svg' %}" alt="img">
+                                <span><img src="{% static 'img_admin/icons/closes.svg' %}" alt="img"></span>
+                            </a>
+                        </div>
+                        <div class="search-input">
+                            <a class="btn btn-searchset"><img src="{% static 'img_admin/icons/search-white.svg' %}"
+                                    alt="img"></a>
+                        </div>
+                    </div>
+                    <div class="wordset">
+                        <ul>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" id="download_pdf"><img
+                                        src="{% static 'img_admin/icons/pdf.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel" id="download_excel"><img
+                                        src="{% static 'img_admin/icons/excel.svg' %}" alt="img"></a>
+                            </li>
+                            <li>
+                                <a data-bs-toggle="tooltip" data-bs-placement="top" title="print" id="print_report"><img
+                                        src="{% static 'img_admin/icons/printer.svg' %}" alt="img"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="filter_inputs">
+                    <div class="card-body pb-0">
+                        <div class="row">
+                            <form method="get" style="display: flex;">
+                                <div class="col-lg-6 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <button class="filter-btn btn btn-primary " data-filter="daily">Daily</button>
+                                        <button class="filter-btn btn btn-secondary " data-filter="weekly">Weekly</button>
+                                        <button class="filter-btn btn btn-success " data-filter="monthly">Monthly</button>
+                                        <button class="filter-btn btn btn-info " data-filter="yearly">Yearly</button>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-3 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <button class="btn btn-filters ms-auto"><img
+                                                src="{% static 'img_admin/icons/search-whites.svg' %}" alt="img"></button>
+                                    </div>
+                                </div> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="report-results">
+                    <p>Total Sales: <span id="total_sales">0</span></p>
+                    <p>Total Discount: <span id="total_discount">0</span></p>
+                    <p>Total Orders: <span id="total_orders">0</span></p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table  datanew">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>id</th>
+                                <th>Customer Name</th>
+                                <th>Coupon code</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Total</th>
+                                <th>Unit</th>
+                                <th>Qnt</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items%}
+                            <tr>
+                                <td>{{item.order.order_date}}</td>
+                                <td>{{item.id}}</td>
+                                <td>{{item.order.delivery_address.name}}</td>
+                                <td>
+                                    {% if item.order.id in coupon_usage_order_ides%}
+                                        {% for usage in coupon_usages%}
+                                            {% if usage.order.id == item.order.id %}
+                                                {{ usage.coupon.code }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {%else%}
+                                    None
+                                    {% endif %}
+                                </td>
+                                <td><span class="badges 
+                                    {%if item.status == 'delivered' %}
+                                    bg-lightgreen
+                                    {% elif item.status == 'Order placed' %}
+                                    bg-lightpurple
+                                    {% elif item.status == 'cancelled' %}
+                                    bg-lightgrey
+                                    {% elif item.status == 'returned' %}
+                                    bg-lightred
+                                    {% endif %} ">
+                                    {{item.status}}</span></td>
+                                <td><span class="badges
+                                    {%if item.order.pyment_status == 'done' %}
+                                    bg-lightgreen
+                                    {% else %}
+                                    bg-lightred
+                                    {% endif %} ">
+                                    {{item.order.pyment_status}}</span></td>
+                                <td>₹ {{item.price}}</td>
+                                <td>₹ {{item.unit_price}}</td>
+                                <td class="text-red">{{item.quantity}}</td>
+                                <td class="text-center">
+                                    <a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown"
+                                        aria-expanded="true">
+                                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="sales-details.html" class="dropdown-item"><img
+                                                    src="{% static 'img_admin/icons/eye1.svg' %}" class="me-2" alt="img">Sale
+                                                Detail</a>
+                                        </li>
+                                        <li>
+                                            <a href="edit-sales.html" class="dropdown-item"><img
+                                                    src="{% static 'img_admin/icons/edit.svg' %}" class="me-2" alt="img">Edit
+                                                Sale</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item"
+                                                data-bs-toggle="modal" data-bs-target="#showpayment"><img
+                                                    src="{% static 'img_admin/icons/dollar-square.svg' %}" class="me-2"
+                                                    alt="img">Show Payments</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item"
+                                                data-bs-toggle="modal" data-bs-target="#createpayment"><img
+                                                    src="{% static 'img_admin/icons/plus-circle.svg' %}" class="me-2"
+                                                    alt="img">Create Payment</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item"><img
+                                                    src="{% static 'img_admin/icons/download.svg' %}" class="me-2"
+                                                    alt="img">Download pdf</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);"
+                                                class="dropdown-item confirm-text"><img
+                                                    src="{% static 'img_admin/icons/delete1.svg' %}" class="me-2"
+                                                    alt="img">Delete Sale</a>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let filterType = 'weekly';  // Default filter type
+    
+        $('.filter-btn').on('click', function(e) {
+            e.preventDefault();
+            filterType = $(this).data('filter');
+            
+            $.ajax({
+                url: '{% url "sales_report" %}',
+                data: {
+                    'filter_type': filterType,
+                },
+                success: function(response) {
+                    // Update the table and totals
+                    updateTable(response.order_items);
+                    $('#total_sales').text(`₹ ${response.total_sales}`);
+                    $('#total_discount').text(`₹ ${response.total_discount}`);
+                    $('#total_orders').text(response.total_orders);
+                }
+            });
+        });
+    
+        // PDF Download without page refresh
+        $('#download_pdf').on('click', function(event) {
+            event.preventDefault();
+            downloadFile('download_pdf_report', filterType, 'pdf');
+        });
+    
+        // Excel Download without page refresh
+        $('#download_excel').on('click', function(event) {
+            event.preventDefault();
+            downloadFile('download_excel_report', filterType, 'csv');
+        });
+    
+        function downloadFile(url, filterType, fileType) {
+            $.ajax({
+                url: `{% url "download_pdf_report" %}?filter_type=` + filterType,
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(data) {
+                    let blob = new Blob([data], { type: fileType === 'pdf' ? 'application/pdf' : 'text/csv' });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `sales_report.${fileType}`;
+                    link.click();
+                }
+            });
+        }
+    
+        function updateTable(orderItems) {
+            let tableBody = $('table.datanew tbody');
+            tableBody.empty();
+            $.each(orderItems, function(index, item) {
+                let row = `<tr>
+                    <td>${item.order__order_date}</td>
+                    <td>${item.id}</td>
+                    <td>${item.order__delivery_address__name}</td>
+                    <td>${item.order__coupon_usage__coupon__code || 'None'}</td>
+                    <td><span class="badges ${getStatusBadge(item.status)}">${item.status}</span></td>
+                    <td><span class="badges ${item.order__payment_status == 'done' ? 'bg-lightgreen' : 'bg-lightred'}">${item.order__payment_status}</span></td>
+                    <td>₹ ${item.price}</td>
+                    <td>₹ ${item.unit_price}</td>
+                    <td class="text-red">${item.quantity}</td>
+                    <td class="text-center">
+                        <a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
+                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="sales-details.html" class="dropdown-item">Sale Detail</a></li>
+                            <!-- More dropdown items -->
+                        </ul>
+                    </td>
+                </tr>`;
+                tableBody.append(row);
+            });
+        }
+    
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'delivered': return 'bg-lightgreen';
+                case 'Order placed': return 'bg-lightpurple';
+                case 'cancelled': return 'bg-lightgrey';
+                case 'returned': return 'bg-lightred';
+                default: return '';
+            }
+        }
+    });
+    {/* $(document).ready(function() {
+        let filterType = 'weekly';  
+        
+        $('.filter-btn').on('click', function(e) {
+            e.preventDefault();
+            filterType = $(this).data('filter');
+            
+            $.ajax({
+                url: '{% url "sales_report" %}',
+                data: {
+                    'filter_type': filterType,
+                },
+                success: function(response) {
+                    // Update the table and totals
+                    updateTable(response.order_items);
+                    $('#total_sales').text(`₹ ${response.total_sales}`);
+                    $('#total_discount').text(`₹ ${response.total_discount}`);
+                    $('#total_orders').text(response.total_orders);
+                }
+            });
+        });
+    
+        // PDF Download without page refresh
+        $('#download_pdf').on('click', function(event) {
+            event.preventDefault();
+            downloadFile('download_pdf_report', filterType, 'pdf');
+        });
+    
+        // Excel Download without page refresh
+        $('#download_excel').on('click', function(event) {
+            event.preventDefault();
+            downloadFile('download_excel_report', filterType, 'csv');
+        });
+    
+        function downloadFile(url, filterType, fileType) {
+            $.ajax({
+                url: `{% url "download_excel_report" %}?filter_type=` + filterType,
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(data) {
+                    let blob = new Blob([data], { type: fileType === 'pdf' ? 'application/pdf' : 'text/csv' });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `sales_report.${fileType}`;
+                    link.click();
+                }
+            });
+        }
+    
+        function updateTable(orderItems) {
+            let tableBody = $('table.datanew tbody');
+            tableBody.empty();
+            $.each(orderItems, function(index, item) {
+                let row = `<tr>
+                    <td>${item.order__order_date}</td>
+                    <td>${item.id}</td>
+                    <td>${item.order__delivery_address__name}</td>
+                    <td>${item.order__coupon_usage__coupon__code || 'None'}</td>
+                    <td><span class="badges ${getStatusBadge(item.status)}">${item.status}</span></td>
+                    <td><span class="badges ${item.order__payment_status == 'done' ? 'bg-lightgreen' : 'bg-lightred'}">${item.order__payment_status}</span></td>
+                    <td>₹ ${item.price}</td>
+                    <td>₹ ${item.unit_price}</td>
+                    <td class="text-red">${item.quantity}</td>
+                    <td class="text-center">
+                        <a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
+                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="sales-details.html" class="dropdown-item">Sale Detail</a></li>
+                            <!-- More dropdown items -->
+                        </ul>
+                    </td>
+                </tr>`;
+                tableBody.append(row);
+            });
+        }
+    
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'delivered': return 'bg-lightgreen';
+                case 'Order placed': return 'bg-lightpurple';
+                case 'cancelled': return 'bg-lightgrey';
+                case 'returned': return 'bg-lightred';
+                default: return '';
+            }
+        }
+    }); */}
+</script>
+{% endblock %}
+

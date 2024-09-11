@@ -1,0 +1,478 @@
+<!-- user-details -->
+
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Personal Details{% endblock %}
+{% block content %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .profile-img {
+            width: 253px;
+            height: 253px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .section-title {
+            color: #124e66;
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 25px;
+        }
+
+        .btn-custom {
+            background-color: #124e66;
+            color: #fff;
+            border-radius: 25px;
+            border: #124e66 solid;
+            width: 100%;
+        }
+
+        .btn-custom:hover {
+            background-color: #ffffff;
+            color: #124e66;
+            border: #124e66 solid;
+        }
+        
+        .btn-customp {
+            background-color: #ffffff;
+            color: #124e66;
+            border-radius: 25px;
+            border: #124e66 solid;
+            width: 100%;
+        }
+
+        .btn-customp:hover {
+            background-color: #124e66;
+            color: #ffffff;
+            border: #124e66 solid;
+        }
+        .btn-custom_log {
+            background-color: #ff0000;
+            color: #fff;
+            border-radius: 25px;
+            border: #ff0000 solid;
+            width: 100px;
+            justify-content: end;
+            margin-left: 50%;
+        }
+
+        .btn-custom_log:hover {
+            background-color: #ffffff;
+            color: #ff0000;
+            border: #ff0000 solid;
+        }
+        .btn-custom_pass {
+            background-color: #00ff15;
+            color: #ffffff;
+            border-radius: 25px;
+            border: #00ff15 solid;
+            width: 200px;
+            justify-content: end;
+            margin-left: 42%;
+        }
+
+        .btn-custom_pass:hover {
+            background-color: #ffffff;
+            color: #00ff15;
+            border: #00ff15 solid;
+        }
+
+        .address-section, .coupon-section {
+            border-radius: 25px;
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .wallet-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 25px;
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #124e66;
+            border: 2px solid #124e66;
+            text-decoration: none;
+        }
+
+        .wallet-btn img {
+            margin-right: 10px;
+        }
+
+        .address-options {
+            margin-top: 10px;
+        }
+
+        .address-options input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .add-new-address {
+            background-color: #124e66;
+            color: #fff;
+            border-radius: 25px;
+            padding: 5px 10px;
+            text-decoration: none;
+        }
+
+        .coupon {
+            border: 2px solid #124e66;
+            border-radius: 25px;
+            padding: 10px;
+            margin-right: 20px;
+        }
+
+        .coupon:last-child {
+            margin-right: 0;
+        }
+        input[type=text] {
+            width: 100%;
+            padding: 3px 10%;
+            margin: 8px 0;
+        }
+        nav ul li a{
+            color: #212a31;
+        }
+        nav ul li a:hover{
+            text-decoration: none;
+            color: #212a34;
+        }
+    </style> 
+<div class="container" style="display: flex; flex-wrap: wrap; margin-top: 50px;">
+    <div class="text-center col-md-6">
+        <img src="{% static 'images/user.jpg' %}" alt="User Image" class="profile-img">
+        <a href="{% url 'old_password' user.id %}" class="btn btn-customp">Change Password</a>
+    </div>
+
+    <form class="col-md-6" method="post" enctype="multipart/form-data" style="border: #124e66 1px solid; border-radius: 30px; padding-top: 4px;">
+       {% csrf_token %}
+        <div class="form-group row">
+             <h3 class="section-title">Personal Details</h3> 
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <input style="width: 100%;" type="text" class="form-control" placeholder="First name" value="{{user.first_name}}" name="f_name" required>
+            </div>
+            <div class="col-md-6">
+                <input style="width: 100%;" type="text" class="form-control" placeholder="Last name" value="{{user.last_name}}" name="l_name" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6" style="display: none;">
+                <input type="email" class="form-control" placeholder="Email ID" value="{{user.email}}" required name="email" >
+            </div>
+            <div class="col-md-12">
+                <input style="    width: 100%;" type="text" class="form-control" placeholder="Phone" value="{{user.phone}}" required name="phone" onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-12" style="width: 100%;">
+                <input style="width: 100%;" type="text" class="form-control" placeholder="Username" value="{{user.username}}" required name="username" onkeyup="if (/[^|A-Za-z0-9_.]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9_.]+/g,'')">
+            </div>
+            <!-- <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Address" value="">
+            </div> -->
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div  style="color: red; text-align: center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="text-center">
+            <button style="border: 3px solid #124e66;" type="submit" class="btn btn-custom">Save</button>
+        </div>
+    </form>
+
+
+    <div class="coupon-section  col-md-12" style="flex-wrap: wrap; display: flex; align-content: space-around; box-shadow: none; border: 1px solid #124e66;">
+        <div class="text-center col-md-12" >
+            <div class="flex" >
+                <h4 class="section-title col-md-4" style="margin-top: 10px;">Referral Code</h4>
+                <input style="padding: 2%;" type="text" id="referralCode" class="form-control col-md-8" value="{{ profile.referral_code }}" readonly>
+            </div>
+            
+            <div class="flex" style="justify-content: center;">
+                <button class="btn btn-custom col-md-6" onclick="copyReferralCode()">Copy Code</button>
+
+                <button class="btn btn-customp col-md-6 " style="margin-left: 10px;" >
+                    <a href="https://api.whatsapp.com/send?text=Use my referral code {{ profile.referral_code }} to get 1000 ruppese in phonopedia wallet!" target="_blank">Share on WhatsApp</a>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="address-section col-md-6" style="border: 1px solid #124e66; box-shadow: none;">
+        <h4 class="section-title">Address</h4>
+        <div class="address-options">
+            {% for address in addresses%}
+            <label style="border: 1px solid #124e66; border-radius: 12px; padding: 5px 5px 0px;">
+                <a href="{% url 'delete_address' address.id %}" style="color: #ff0000;">Delete</a> &nbsp;&nbsp;
+                <a href="#" class="view-address" data-addres-id="{{ address.id }}">
+                    <small>{{address.place}},{{address.pin}}</small><br>
+                    <small>{{address.house_name}}</small></p>
+                </a>
+            </label>
+            {% endfor %}
+        </div>
+        
+
+        <form class="mt-4" method="post" enctype="multipart/form-data" action="{% url 'add_address' %}">
+            {% csrf_token %}
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <select class="form-control" id="state" name="state" required></select>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-control" name="district" id="district" required ></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <input type="text" class="form-control" placeholder="City" required name="city" id="city">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Place" required name="place" id="place">
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control" placeholder="Pin Code" required id="pin" name="pin" minlength="6" maxlength="6">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Road" required name="road" id="road">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="House Name" required name="house_name" id="house_name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <input type="text" class="form-control" placeholder="Landmark" required name="landmark" id="landmark">
+                    <input style="display: none;" type="text" class="form-control" required name="id" id="id" value="old">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <button type="submit" class="form-contro btn btn-custom">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    
+
+    <div class="coupon-section  col-md-6" style="flex-wrap: wrap; display: flex; align-content: space-around; box-shadow: none; ">
+        <div class="text-center col-md-12" >
+            <a href="{% url 'view_wallet' %}" class="wallet-btn">
+                <img style="    width: 30px;" src="{% static 'images/wallet.png' %}" alt="Wallet Icon"> Wallet
+            </a>
+        </div>
+        <div class="coupon text-center col-md-12">
+            <p>20% off up to ₹2000 on smart Phones</p>
+            <p>Get extra 20% off upto ₹200 on items (Price inclusive on cashback/coupon)</p>
+        </div>
+        <div class="coupon text-center col-md-12">
+            <p>20% off up to ₹2000 on smart Phones</p>
+            <p>Get extra 20% off upto ₹200 on items (Price inclusive on cashback/coupon)</p>
+        </div>
+    </div>
+</div>
+<br><br><br>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    var states_arr = new Array("Andhra Pradesh" , "Arunachal Pradesh" , "Assam" , "Bihar" , "Chhattisgarh" , "Goa" , "Gujarat" , "Haryana" , "Himachal Pradesh" , "Jammu and Kashmir" , "Jharkhand" , "Karnataka" , "Kerala" , "Madhya Pradesh" , "Maharashtra" , "Manipur" , "Meghalaya" , "Mizoram" , "Nagaland" , "Orissa" , "Punjab" , "Rajasthan" , "Sikkim" , "Tamil Nadu" , "Telangana" , "Tripura" , "Uttar Pradesh" , "Uttaranchal" , "West Bengal" , "Andaman and Nicobar Islands" , "Chandigarh" , "Dadra and Nagar Haveli" , "Daman and Diu" , "Delhi" , "Lakshadweep" , "Pondicherry");
+
+    var district_arr = new Array();
+
+    district_arr[0] = "";
+
+    district_arr[1] = "Anantapur|Chittoor|Cuddapah|East Godavari|Guntur|Krishna|Kurnool|Nellore|Prakasam|Srikakulam|Vishakapatnam|Vizianagaram|West Godavari";
+
+    district_arr[2] = "Anjaw|Changlang|Dibang Valley|East Kameng|East Siang|Kra Daadi|Kurung Kumey|Lohit|Longding|Lower Dibang Valley|Lower Subansiri|Namsai|Papum Pare|Siang|Tawang|Tirap|Upper Siang|Upper Subansiri|West Kameng|West Siang";
+
+    district_arr[3] = "Baksa|Barpeta|Bongaigaon|Cachar|Chirang|Darrang|Dhemaji|Dhubri|Dibrugarh|Dima Hasao|Goalpara|Golaghat|Hailakandi|Jorhat|Kamrup M|Kamrup R|Karbi Anglong|Karimganj|Kokrajhar|Lakhimpur|Marigaon|Nagaon|Nalbari|Sibsagar|Sonitpur|Tinsukia|Udalguri";
+
+    district_arr[4] = "Araria|Arwal|Aurangabad|Banka|Begusarai|Bhagalpur|Bhojpur|Buxar|Darbhanga|East Champaran|Gaya|Gopalganj|Jamui|Jehanabad|Kaimur Bhabua|Katihar|Khagaria|Kishanganj|Lakhisarai|Madhepura|Madhubani|Munger|Muzaffarpur|Nalanda|Nawada|Patna|Purnia|Rohtas|Saharsa|Samastipur|Saran|Sheikhpura|Sheohar|Sitamarhi|Siwan|Supaul|Vaishali|West Champaran";
+
+    district_arr[5] = "Balod|Baloda Bazar|Balrampur|Bastar|Bemetra|Bijapur|Bilaspur|Dantewada|Dhamtari|Durg|Gariyaband|Janjgir Champa|Jashpur|Kanker|Kawardha|Kondagaon|Korba|Koriya|Mahasamund|Mungeli|Narayanpur|Raigarh|Raipur|Rajnandgaon|Sukma|Surajpur|Surguja";
+
+    district_arr[6] = "North Goa|South Goa";
+
+    district_arr[7] = "Ahmedabad|Amreli|Anand|Aravalli|Banas Kantha|Bharuch|Bhavnagar|Botad|Chhotaudepur|Dahod|Devbhumi Dwarka|Gandhinagar|Gir Somnath|Jamnagar|Junagadh|Kachchh|Kheda|Mahesana|Mahisagar|Morbi|Narmada|Navsari|Panch Mahals|Patan|Porbandar|Rajkot|Sabar Kantha|Surat|Surendranagar|Tapi|The Dangs|Vadodara|Valsad";
+
+    district_arr[8] = "Ambala|Bhiwani|Faridabad|Fatehabad|Gurgaon|Hisar|Jhajjar|Jind|Kaithal|Karnal|Kurukshetra|Mahendragarh|Mewat|Palwal|Panchkula|Panipat|Rewari|Rohtak|Sirsa|Sonipat|Yamunanagar";
+
+    district_arr[9] = "Bilaspur|Chamba|Hamirpur|Kangra|Kinnaur|Kullu|Lahul Spiti|Mandi|Shimla|Sirmaur|Solan|Una";
+
+    district_arr[10] = "Anantnag|Badgam|Bandipora|Baramula|Doda|Ganderbal|Jammu|Kargil|Kathua|Kishtwar|Kulgam|Kupwara|Leh Ladakh|Poonch|Pulwama|Rajouri|Ramban|Reasi|Samba|Shopian|Srinagar|Udhampur";
+
+    district_arr[11] = "Bokaro|Chatra|Deoghar|Dhanbad|Dumka|Garhwa|Giridih|Godda|Gumla|Hazaribagh|Jamtara|Khunti|Kodarma|Latehar|Lohardaga|Pakaur|Palamu|Pashchimi Singhbhum|Purbi Singhbhum|Ramgarh|Ranchi|Sahibganj|Saraikela|Simdega";
+
+    district_arr[12] = "Bagalkote|Bangalore Rural|Bangalore Urban|Belgaum|Bellary|Bidar|Bijapur|Chamrajnagar|Chikkaballapur|Chikmagalur|Chitradurga|Dakshina Kannada|Davanagere|Dharwad|Gadag|Gulbarga|Hassan|Haveri|Kodagu|Kolar|Koppal|Mandya|Mysore|Raichur|Ramanagar|Shimoga|Tumkur|Udupi|Uttara Kannada|Yadgir";
+
+    district_arr[13] = "Alappuzha|Ernakulam|Idukki|Kannur|Kasaragod|Kollam|Kottayam|KOZHIKKODE|Malappuram|Palakkad|Pathanamthitta|Thiruvananthapuram|Thrissur|Wayanad";
+
+    district_arr[14] = "Agar Malwa|Alirajpur|Anuppur|Ashok Nagar|Balaghat|Barwani|Betul|Bhind|Bhopal|Burhanpur|Chhatarpur|Chhindwada|Damoh|Datia|Dewas|Dhar|Dindori|Guna|Gwalior|Harda|Hoshangabad|Indore|Jabalpur|Jhabua|Katni|Khandwa|Khargone|Mandla|Mandsaur|Morena|Narsinghpur|Neemuch|Panna|Raisen|Rajgarh|Ratlam|Rewa|Sagar|Satna|Sehore|Seoni|Shahdol|Shajapur|Sheopur|Shivpuri|Sidhi|Singroli|Tikamgarh|Ujjain|Umaria|Vidisha";
+
+    district_arr[15] = "Ahmednagar|Akola|Amravati|Aurangabad|Bhandara|Bid|Brihan Mumbai|Buldana|Chandrapur|Dhule|Gadchiroli|Gondiya|Hingoli|Jalgaon|Jalna|Kolhapur|Latur|Nagpur|Nanded|Nandurbar|Nashik|Osmanabad|Palghar|Parbhani|Pune|Raigarh|Ratnagiri|Sangli|Satara|Sindhudurg|Solapur|Thane|Wardha|Washim|Yavatmal";
+
+    district_arr[16] = "Bishnupur|Chandel|Churachandpur|Imphal East|Imphal West|Senapati|Tamenglong|Thoubal|Ukhrul";
+
+    district_arr[17] = "East Garo Hills|East Jaintia Hills|East Khasi Hills|North Garo Hills|Ri Bhoi|South Garo Hills|South West Garo Hills|South West Khasi Hills|West Garo Hills|West Jaintia Hills|West Khasi Hills";
+
+    district_arr[18] = "Aizawl East|Aizawl West|Champhai|Kolasib|Lawngtlai|Lunglei|Mamit|Saiha|Serchhip";
+
+    district_arr[19] = "Dimapur|Kiphire|Kohima|Longleng|Mokokchung|Mon|Peren|Phek|Tuensang|Wokha|Zunheboto";
+
+    district_arr[20] = "Anugul|Balangir|Baleshwar|Bargarh|Baudh|Bhadrak|Cuttack|Deogarh|Dhenkanal|Gajapati|Ganjam|Jagatsinghpur|Jajapur|Jharsuguda|Kalahandi|Kandhamal|Kendrapara|Keonjhar|Khordha|Koraput|Malkangiri|Mayurbhanj|Nabarangapur|Nayagarh|Nuapada|Puri|Rayagada|Sambalpur|Sonapur|Sundargarh";
+
+
+    district_arr[21] = "Amritsar|Barnala|Bathinda|Faridkot|Fatehgarh Sahib|Fazilka|Firozpur|Gurdaspur|Hoshiarpur|Jalandhar|Kapurthala|Ludhiana|Mansa|Moga|Mohali SAS Nagar|Muktsar|Nawanshahr|Pathankot|Patiala|Rupnagar|Sangrur|Tarn Taran";
+
+    district_arr[22] = "Ajmer|Alwar|Banswara|Baran|Barmer|Bharatpur|Bhilwara|Bikaner|Bundi|Chittaurgarh|Churu|Dausa|Dhaulpur|Dungarpur|Ganganagar|Hanumangarh|Jaipur|Jaisalmer|Jalor|Jhalawar|Jhunjhunun|Jodhpur|Karauli|Kota|Nagaur|Pali|Pratapgarh|Rajsamand|Sawai Madhopur|Sikar|Sirohi|Tonk|Udaipur";
+
+    district_arr[23] = "East|North|South|West";
+
+    district_arr[24] = "Ariyalur|Chennai|Coimbatore|Cuddalore|Dharmapuri|Dindigul|Erode|Kancheepuram|Kanniyakumari|Karur|Krishnagiri|Madurai|Nagapattinam|Namakkal|Nilgiris|Perambalur|Pudukkottai|Ramanathapuram|Salem|Sivaganga|Thanjavur|Theni|Thiruvallur|Thiruvarur|Tiruchirappalli|Tirunelveli|Tirupur|Tiruvanamalai|Toothukudi|Vellore|Viluppuram|Virudhunagar";
+
+    district_arr[25] = "Adilabad|Hyderabad|Karim Nagar|Khammam|Mahbubnagar|Medak|Nalgonda|Nizamabad|Ranga Reddy|Warangal Urban";
+
+    district_arr[26] = "Dhalai|Gomati|Khowai|North Tripura|Sipahijala|South Tripura|Unakoti|West Tripura";
+
+    district_arr[27] = "Agra|Aligarh|Allahabad|Ambedkar Nagar|Auraiya|Azamgarh|Bagpat|Bahraich|Ballia|Balrampur|Banda|Barabanki|Bareilly|Basti|Bijnor|Budaun|Bulandshahar|C S M Nagar|Chandauli|Chitrakoot|Deoria|Etah|Etawah|Faizabad|Farrukhabad|Fatehpur|Firozabad|Gautam Buddha Nagar|Ghaziabad|Ghazipur|Gonda|Gorakhpur|Hamirpur|Hapur|Hardoi|Hathras|Jalaun|Jaunpur|Jhansi|Jyotiba Phule Nagar|Kannauj|Kanpur Dehat|Kanpur Nagar|Kashi Ram Nagar|Kaushambi|Kushinagar|Lakhimpur Kheri|Lalitpur|Lucknow|Maharajganj|Mahoba|Mainpuri|Mathura|Maunathbhanjan|Meerut|Mirzapur|Moradabad|Muzaffarnagar|Pilibhit|Pratapgarh|Rae Bareli|Rampur|Saharanpur|Sambhal|Sant Kabir Nagar|Sant Ravidas Nagar|Shahjahanpur|Shamli|Shrawasti|Siddharth Nagar|Sitapur|Sonbhadra|Sultanpur|Unnav|Varanasi";
+
+    district_arr[28] = "Almora|Bageshwar|Chamoli|Champawat|Dehradun|Garhwal|Hardwar|Nainital|Pithoragarh|Rudraprayag|Tehri Garhwal|Udham Singh Nagar|Uttarkashi";
+
+    district_arr[29] = "Alipurduar|Bankura|Barddhaman|Birbhum|Dakshin Dinajpur|Darjiling|Haora|Hugli|Jalpaiguri|Koch Bihar|Maldah|Murshidabad|Nadia|North Twenty Four Parganas|Paschim Medinipur|Purba Medinipur|Puruliya|South Twenty Four Parganas|Uttar Dinajpur";
+
+
+
+    district_arr[30] = "Nicobar|North and Middle Andaman|South Andaman";
+
+    district_arr[31] = "Chandigarh";
+
+    district_arr[32] = "Dadra and Nagar Haveli";
+
+    district_arr[33] = "Daman|Diu";
+
+    district_arr[34] = "Central|East|New Delhi|North|North East|North West|Shahdara|South|South East|South West|West";
+
+    district_arr[35] = "Lakshadweep";
+
+    district_arr[36] = "Karaikal|Mahe|Pondicherry|Yanam";
+
+
+    function populateDistricts(stateElementId, districtElementId) 
+    {
+      var selectedStateIndex = document.getElementById(stateElementId).selectedIndex;
+      var districtElement = document.getElementById(districtElementId);
+      districtElement.length = 0;
+      districtElement.options[0] = new Option('Select district', '');
+      districtElement.selectedIndex = 0;
+      var district_ar = district_arr[selectedStateIndex].split("|");
+      for (var i = 0; i < district_ar.length; i++) 
+      {
+        districtElement.options[districtElement.length] = new Option(district_ar[i], district_ar[i]);
+      }
+    }
+
+    function populateStates(stateElementId, districtElementId)
+    {
+      // given the id of the <select> tag as function argument, it inserts <option> tags
+      var stateElement = document.getElementById(stateElementId);
+      stateElement.length = 0;
+      stateElement.options[0] = new Option('Select state', '-1');
+      stateElement.selectedIndex = 0;
+      for (var i = 0; i < states_arr.length; i++)
+      {
+        stateElement.options[stateElement.length] = new Option(states_arr[i], states_arr[i]);
+      }
+
+      // Assigned all countries. Now assign event listener for the states.
+
+      if (districtElementId) 
+      {
+        stateElement.onchange = function () 
+        {
+          populateDistricts(stateElementId, districtElementId);
+        };
+      }
+    }
+  </script>
+  <script language="javascript"> populateStates("state", "district"); </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle increase quantity
+        $('.view-address').click(function(e) {
+            e.preventDefault();
+            var addressID = $(this).data('addres-id');
+            
+            $.ajax({
+                url: "{% url 'view_address' 0 %}".replace('0', addressID),
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#state').val(response.state);
+                        $('#district').val(response.district);
+                        $('#city').val(response.city);
+                        $('#place').val(response.place);
+                        $('#pin').val(response.pin);
+                        $('#house_name').val(response.house_name);
+                        $('#landmark').val(response.landmark);
+                        $('#road').val(response.road);
+                        $('#id').val(addressID);
+                        updateCartTotals();
+                    } else if (response.status === 'unauthenticated') {
+                        alert('Please sign in to add an address.');
+                    }
+                }
+            });
+        });
+    
+        function updateCartTotals() {
+            // Optionally implement this function to update the subtotal, tax, and total on the page
+        }
+    });
+</script>
+<script>
+    function copyReferralCode() {
+        var copyText = document.getElementById("referralCode");
+        copyText.select();
+        document.execCommand("copy");
+        Toastify({
+            text: "Referral Code Copied: " + copyText.value,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#4CAF50",
+            stopOnFocus: true,
+        }).showToast();
+    }
+</script>
+{% endblock %}

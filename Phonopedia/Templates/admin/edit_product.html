@@ -1,0 +1,95 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Edit product{% endblock %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title">
+                    <h4>Edit {{product.name}}</h4>
+                    <h6>Edit the product</h6>
+                </div>
+            </div>
+            {% if messages%}
+                {% for message in messages%}
+                    <p style="color: blueviolet;">{{message}}</p>
+                {% endfor%}
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Product Name</label>
+                                    <input type="text" name="name" required value="{{product.name}}">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select class="select" name="category" required>
+                                        {% for c in categoryes%}
+                                                <option value="{{c.id}}" {% if product.category.id == c.id %}selected{%endif%}>{{c.name}}</option>
+                                            {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Sub Category</label>
+                                    <select class="select">
+                                        <option>Choose Sub Category</option>
+                                        <option>Fruits</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Brand</label>
+                                        <select class="select" name="brand" required >
+                                            {% for b in brands%}
+                                                <option value="{{b.id}}" {% if product.brand.id == b.id %}selected{%endif%}>{{b.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                        <label>Operating system</label>
+                                        <input type="text" name="operating_system" required value="{{product.operating_system}}">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Processor</label>
+                                    <input type="text" name="processor" required value="{{product.processor}}">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Screen size</label>
+                                    <input type="text" required name="screen_size" value="{{product.screen_size}}" onkeyup="if (/[^|0-9.]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9.]+/g,'')">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea class="form-control" required minlength="5" name="description" >{{product.description}}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <button href="javascript:void(0);" class="btn btn-submit me-2" type="submit">Submit</button>
+                                <!-- <a href="productlist.html" class="btn btn-cancel">Cancel</a> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+

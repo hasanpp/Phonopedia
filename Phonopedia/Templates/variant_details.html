@@ -1,0 +1,226 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}{{variant.product.name}}{% endblock %}
+{% block content %}
+<style>
+    #ProductImg{
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    #ProductImg:hover {
+        transform: scale(1.3);
+    }
+</style>
+<!-- Single Products -->
+<div class="small-container single-product">
+    <div class="row">
+        <div class="col-2">
+            <img src="{{variant.image.url}}" width="100%" id="ProductImg" style="background-color: transparent; mix-blend-mode: multiply;">
+
+            <div class="small-img-row">
+                {% for secondary_image in secondary_images%}
+                <div class="small-img-col" onclick="fun()">
+                    <img src="{{secondary_image.image.url}}" width="100%" class="small-img">
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+        <div class="col-2">
+            <p class="bredcrums">Home / {{variant.product.name}}</p>
+            <h1>{{variant.product.name}}</h1>
+            {%if offer != 0%}
+                <h5><s>₹{{variant.price}}</s></h5><br>
+                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{offer.percentage}} % off !!</h5>
+                <h4 class="price_4">₹{{offerd_price}}</h4>
+            {% else %}
+                <h4 class="price_4">₹{{variant.price}}</h4>
+            {% endif %}
+            {% if not variant.is_active %}
+                <p style="color: burlywood;">Unavailable</p>
+            {% elif not variant.product.is_active %}
+                <p style="color: burlywood;">Unavailable</p>
+            {% elif variant.quantity > 0 %}
+                <p style="color: chartreuse;">In stock {{ variant.quantity }} pice</p>
+            {% elif variant.quantity == 0 %}
+                <p style="color: red;">Out of stock</p>
+            {% endif %}
+            <!-- <select>
+                <option>Select Variant</option>
+                {% for variant in same_variants%}
+                    <option>{{variant.rom}}</option>
+                {% endfor %}
+            </select> -->
+            <br>
+            <span class="inpc_spa" style="flex-wrap: wrap;">
+                {% for variant in same_variants%}
+                <a href="{% url 'variant_details' variant.id %}" style=" text-decoration: none; width: 1100px; height: 40px; border-radius: 55px; margin: 9px; border: 1px solid #124e66;  padding: 1px 25px 0px; font-size: 20px;">
+                    <img style="width: 30px; height: 30px; margin: -9px 0px;" src="{{variant.image.url}}" alt="">{{variant.rom}} / {{variant.ram}}
+                </a>
+                {% endfor %}
+            </span>
+            <a href="#" class="btn add-to-cart-btn" data-variant-id="{{ variant.id }}">Add To Cart</a>
+            <a href="#" class="btn_l add-to-wishlist-btn" data-variant-id="{{ variant.id }}">Add To Wishlist</a>
+            <h3>Specifications<i class="fa fa-indent"></i></h3>
+            <br>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Operating system</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.product.operating_system}}</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Memory storage</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.rom}} GB</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Processor make</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.product.processor}}</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Screen size</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.product.screen_size}} Inches</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Ram</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.ram}} GB</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Brand</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.product.brand.name}}</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Colour</h6><span class="spec_d">:</span><span class="spec_val" style="width: 144px;">{{variant.color}}</span></span>
+            <span class="Spec_item" style="width: 325px;"><h6 class="spec_h">Category</h6><span class="spec_d">:</span><span style="width: 144px;" class="spec_val">{{variant.product.category.name}}</span></span>
+        </div>
+    </div>
+    <h3>Product Details <i class="fa fa-indent"></i></h3>
+    <br>
+    <p>{{variant.product.description}}</p>
+</div>
+<!-- title -->1
+<div class="small-container">
+    <div class="row row-2">
+        <h2>Related Products</h2>
+        <!-- <p style="color: #124e66;">View More</p> -->
+    </div>
+</div>
+<!-- Products -->
+<div class="small-container">
+    <div class="row">
+        {% for variant in relaated_variants%}
+                <div class="col-4">
+                    <a href="{% url 'variant_details' variant.id %}">
+                        <img src="{{variant.image.url}}">
+                        <h4>{{variant.product.name}}</h4>
+                        <!-- <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-o"></i>
+                        </div> -->
+                        {% if variant.product.id in offerd_product_ides %}
+                            {% for p_offer in p_offers%}
+                                {% if p_offer.product.id == variant.product.id %}
+                                    {% if variant.product.brand.id in offerd_brand_ides %}
+                                        {% for b_offer in b_offers%}
+                                            {% if b_offer.brand.id == variant.product.brand.id %}
+                                                {% if b_offer.percentage > p_offer.percentage%}
+                                                    <h5><s>₹{{variant.price}}</s></h5>
+                                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{b_offer.percentage}} % off !!</h5>
+                                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                    <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                                    <p class="offered-price"></p>
+                                                {% else %}
+                                                    <h5><s>₹{{variant.price}}</s></h5>
+                                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                    <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                                    <p class="offered-price"></p>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    {% else%}
+                                        <h5><s>₹{{variant.price}}</s></h5>
+                                        <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                        <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                        <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                        <p class="offered-price"></p>
+                                    {% endif %}
+
+                                {% endif %}
+                            {% endfor %}
+                        {% elif variant.product.brand.id in offerd_brand_ides %}
+                            {% for b_offer in b_offers%}
+                                {% if b_offer.brand.id == variant.product.brand.id %}
+                                    <h5><s>₹{{variant.price}}</s></h5>
+                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!!{{b_offer.percentage}} % off !!</h5>
+                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                    <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                    <p class="offered-price"></p>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>₹{{variant.price}}</p>
+                        {% endif %}
+                    </a>
+                    {% if not variant.is_active %}
+                    <p style="color: burlywood;">Unavailable</p>
+                    {% elif not variant.product.is_active %}
+                    <p style="color: burlywood;">Unavailable</p>
+                    {% elif variant.quantity > 0 %}
+                    <p style="color: chartreuse;">In stock {{ variant.quantity }} pice</p>
+                    {% elif variant.quantity == 0 %}
+                    <p style="color: red;">Out of stock</p>
+                    {% endif %}
+                    <br>
+                    <div class="wish_cart">
+                        <button class="cart add-to-cart-btn" data-variant-id="{{ variant.id }}">Add to cart</button>
+                        <button class="wishlist add-to-wishlist-btn" data-variant-id="{{ variant.id }}">Add to wishlist</button>
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+</div>
+<br><br><br><br>
+<!-- <div class="container">
+    <h2>Reviews</h2>
+    <div class="row row_rew">
+        <div class="col-3" style="    display: flow;">
+            <div class="rating" style="margin: 15px 37px 0px;">
+                <i class="fa fa-star fa-star_re"></i>
+                <i class="fa fa-star fa-star_re"></i>
+                <i class="fa fa-star fa-star_re"></i>
+                <i class="fa fa-star fa-star_re"></i>
+                <i class="fa fa-star-o fa-star_re"></i>
+            </div>
+            <br><br>
+            <div>
+                <div style="width: 100%; background-color: #ffffff; border: #124e66 solid; border-radius: 25px;"><div style="border-radius: 25px; width: 77%; background-color: #124e66; padding-left: 30px; color: #ffffff;">1 star</div></div><br>
+                <div style="width: 100%; background-color: #ffffff; border: #124e66 solid; border-radius: 25px;"><div style="border-radius: 25px; width: 28%; background-color: #124e66; padding-left: 30px; color: #ffffff;">2 star</div></div><br>
+                <div style="width: 100%; background-color: #ffffff; border: #124e66 solid; border-radius: 25px;"><div style="border-radius: 25px; width: 32%; background-color: #124e66; padding-left: 30px; color: #ffffff;">3 star</div></div><br>
+                <div style="width: 100%; background-color: #ffffff; border: #124e66 solid; border-radius: 25px;"><div style="border-radius: 25px; width: 34%; background-color: #124e66; padding-left: 30px; color: #ffffff;">4 star</div></div><br>
+                <div style="width: 100%; background-color: #ffffff; border: #124e66 solid; border-radius: 25px;"><div style="border-radius: 25px; width: 40%; background-color: #124e66; padding-left: 30px; color: #ffffff;">5 star</div></div><br>
+            </div>
+        </div>
+        <div class="col-6 colara" style="padding: 50px;">
+            <div style="display: flex; justify-content: space-between;"  >
+                <div style="display: flex;"><img style='width: 50px; border-radius: 25px;' src="{% static 'images/user-1.png' %}" alt=""> 
+               <h4 style="    margin: 10px;">Mike Smith</h4> </div>
+               <div style="display: flex;">
+                <div class="rating">
+                    <i class="fa fa-star "></i>
+                    <i class="fa fa-star "></i>
+                    <i class="fa fa-star "></i>
+                    <i class="fa fa-star "></i>
+                    <i class="fa fa-star-o"></i>
+                </div>
+               </div>
+            </div>
+            <br>
+            <p>
+                Nice product according to its camera and security but it have some lag issues and price is to high
+            </p>
+        </div>
+    </div>
+</div> -->
+<script>
+    var ProductImg = document.getElementById("ProductImg");
+        var SmallImg = document.getElementsByClassName("small-img");
+
+        SmallImg[0].onclick = function () {
+            ProductImg.src = SmallImg[0].src;
+        }
+        SmallImg[1].onclick = function () {
+            ProductImg.src = SmallImg[1].src;
+        }
+        SmallImg[2].onclick = function () {
+            ProductImg.src = SmallImg[2].src;
+        }
+        SmallImg[3].onclick = function () {
+            ProductImg.src = SmallImg[3].src;
+        }
+</script>
+
+{% endblock %}

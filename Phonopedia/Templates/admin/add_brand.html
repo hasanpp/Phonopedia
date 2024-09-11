@@ -1,0 +1,98 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Add Brand{% endblock %}
+{% block content %}
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Brand ADD</h4>
+                <h6>Create new Brand</h6>
+            </div>
+        </div>
+        {% if messages%}
+                {% for message in messages%}
+                    <p>{{message}}</p>
+                {% endfor%}
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Brand Name Field -->
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="id_name">Brand Name</label>
+                                <input type="text" id="id_name" name="name" class="form-control" 
+                                       value="{{ form.name.value }}" required minlength="3" >
+                                <!-- Error Handling -->
+                                {% if form.name.errors %}
+                                    <div class="text-danger">
+                                        {{ form.name.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description Field (Corrected name from 'discription' to 'description') -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="id_description">Description</label>
+                                <textarea id="id_description" name="description" class="form-control" 
+                                          required minlength="3">{{ form.description.value }}</textarea>
+                                <!-- Error Handling -->
+                                {% if form.description.errors %}
+                                    <div class="text-danger">
+                                        {{ form.description.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Product Image Field -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="id_image">Product Image</label>
+                                <div class="image-upload">
+                                    <input type="file" id="id_image" name="image" class="form-control-file" required>
+                                    <div class="image-uploads">
+                                        <img src="{% static 'img_admin/icons/upload.svg' %}" alt="Upload">
+                                        <h4>Drag and drop a file to upload</h4>
+                                    </div>
+                                </div>
+                                <!-- Error Handling -->
+                                {% if form.image.errors %}
+                                    <div class="text-danger">
+                                        {{ form.image.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Submit</button>
+                            <a href="{% url 'brand_list' %}" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#myForm").on("submit", function(){
+        var input = $("#id_name").val();
+        input = $.trim(input);  // Remove leading and trailing whitespace
+        $("#id_name").val(input);
+    });
+});
+</script>
+{% endblock %}

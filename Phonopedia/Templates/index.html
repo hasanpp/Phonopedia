@@ -1,0 +1,328 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<style>
+    .btn:hover{
+        color: #124e66;
+        background: transparent;
+        border: solid #124e66;
+        
+    }
+    .col-3 img{
+        width: 275px;
+        height: 250px;
+    }
+    .testimonial .col-3 img {
+        width: 50px;
+        margin-top: 20px;
+        border-radius: 50%;
+        height: 50px;
+    }
+</style>
+    <div class="header" style=" margin-top: -191px;">
+        <div class="container">
+            <div class="row" style="padding-top:  96px;">
+                <div class="col-2">
+                    <h1>The right choice to <br>
+                        Purchase a phone!</h1>
+                    <p>
+                        Do you know what make us unique from other dealers ?!.   
+                        <br> 
+                        we will provide life long assistance if you bought a phone from us
+                     </p>
+                    <a href="{% url 'list_products' %}" class="btn">Explore Now &#8594;</a>
+                </div>
+                <div class="col-2">
+                    <img src="{% static 'images/image1.png' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feadtued Categories -->
+
+    <div class="categories">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-3 col_3_left">
+                    <img src="{% static 'images/category-1.jpeg' %}">
+                </div>
+                <div class="col-3 col_3_mid">
+                    <img style="background-color: transparent; mix-blend-mode: multiply;" src="{% static 'images/category-2.jpeg' %}">
+                </div>
+                <div class="col-3 col_3_right">
+                    <img src="{% static 'images/category-3.jpeg' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Products -->
+
+    <div class="small-container">
+        {% if user.id %}
+            <h2 class="title">Recently viewed</h2>
+        {% endif %}
+        <div class="row">
+            {% for variant in recently_viewed_variants%}
+                <div class="col-4" style="height:530px;">
+                    {% if variant%}
+                    <a href="{% url 'variant_details' variant.id %}">
+                        <img src="{{variant.image.url}}" style="background-color: transparent; mix-blend-mode: multiply;" > 
+                        <h4>{{variant.product.name}}</h4>
+                        <!-- <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-o"></i>
+                        </div> -->
+                        {% if variant.product.id in offerd_product_ides %}
+                            {% for p_offer in p_offers%}
+                                {% if p_offer.product.id == variant.product.id %}
+                                    {% if variant.product.brand.id in offerd_brand_ides %}
+                                        {% for b_offer in b_offers%}
+                                            {% if b_offer.brand.id == variant.product.brand.id %}
+                                                {% if b_offer.percentage > p_offer.percentage%}
+                                                    <h5><s>₹{{variant.price}}</s></h5>
+                                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{b_offer.percentage}} % off !!</h5>
+                                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                    <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                                    <p class="offered-price"></p>
+                                                {% else %}
+                                                    <h5><s>₹{{variant.price}}</s></h5>
+                                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                    <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                                    <p class="offered-price"></p>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    {% else%}
+                                        <h5><s>₹{{variant.price}}</s></h5>
+                                        <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                        <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                        <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                        <p class="offered-price"></p>
+                                    {% endif %}
+
+                                {% endif %}
+                            {% endfor %}
+                        {% elif variant.product.brand.id in offerd_brand_ides %}
+                            {% for b_offer in b_offers%}
+                                {% if b_offer.brand.id == variant.product.brand.id %}
+                                    <h5><s>₹{{variant.price}}</s></h5>
+                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!!{{b_offer.percentage}} % off !!</h5>
+                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                    <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                    <p class="offered-price"></p>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>₹{{variant.price}}</p>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                    {% if not variant.is_active %}
+                        <p style="color: burlywood;">Unavailable</p>
+                    {% elif not variant.product.is_active %}
+                        <p style="color: burlywood;">Unavailable</p>
+                    {% elif variant.quantity > 0 %}
+                        <p style="color: chartreuse;">In stock {{ variant.quantity }} pice</p>
+                    {% elif variant.quantity == 0 %}
+                        <p style="color: red;">Out of stock</p>
+                    {% endif %}
+                        <br>
+                    <div class="wish_cart">
+                        <button class="cart add-to-cart-btn" data-variant-id="{{ variant.id }}">Add to cart</button>
+                        <button class="wishlist add-to-wishlist-btn" data-variant-id="{{ variant.id }}">Add to wishlist</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <br>
+        <h2 class="title">Latest Products</h2>
+        <div class="row">
+            {% for variant in variants%}
+            <div class="col-4" style="height:530px;">
+                <a href="{% url 'variant_details' variant.id %}">
+                    <img src="{{variant.image.url}}" style="background-color: transparent; mix-blend-mode: multiply;" > 
+                    <h4>{{variant.product.name}}</h4>
+                    <!-- <div class="rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-o"></i>
+                    </div> -->
+                    {% if variant.product.id in offerd_product_ides %}
+                        {% for p_offer in p_offers%}
+                            {% if p_offer.product.id == variant.product.id %}
+                                {% if variant.product.brand.id in offerd_brand_ides %}
+                                    {% for b_offer in b_offers%}
+                                        {% if b_offer.brand.id == variant.product.brand.id %}
+                                            {% if b_offer.percentage > p_offer.percentage%}
+                                                <h5><s>₹{{variant.price}}</s></h5>
+                                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{b_offer.percentage}} % off !!</h5>
+                                                <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                                <p class="offered-price"></p>
+                                            {% else %}
+                                                <h5><s>₹{{variant.price}}</s></h5>
+                                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                                <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                                <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                                <p class="offered-price"></p>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                {% else%}
+                                    <h5><s>₹{{variant.price}}</s></h5>
+                                    <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                    <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                    <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                    <p class="offered-price"></p>
+                                {% endif %}
+
+                            {% endif %}
+                        {% endfor %}
+                    {% elif variant.product.brand.id in offerd_brand_ides %}
+                        {% for b_offer in b_offers%}
+                            {% if b_offer.brand.id == variant.product.brand.id %}
+                                <h5><s>₹{{variant.price}}</s></h5>
+                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!!{{b_offer.percentage}} % off !!</h5>
+                                <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                <p class="offered-price"></p>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>₹{{variant.price}}</p>
+                    {% endif %}
+                </a>
+                {% if not variant.is_active %}
+                    <p style="color: burlywood;">Unavailable</p>
+                {% elif not variant.product.is_active %}
+                    <p style="color: burlywood;">Unavailable</p>
+                {% elif variant.quantity > 0 %}
+                    <p style="color: chartreuse;">In stock {{ variant.quantity }} pice</p>
+                {% elif variant.quantity == 0 %}
+                    <p style="color: red;">Out of stock</p>
+                {% endif %}
+                    <br>
+                <div class="wish_cart">
+                    <button class="cart add-to-cart-btn" data-variant-id="{{ variant.id }}">Add to cart</button>
+                    <button class="wishlist add-to-wishlist-btn" data-variant-id="{{ variant.id }}">Add to wishlist</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Offer -->
+    <div class="offer">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-2" >
+                        <img src="{{exclusive_v.image.url}}" class="offer-img" style="background-color: transparent; mix-blend-mode: multiply;">
+                </div>
+                <div class="col-2">
+                    <p>Exclusively Available on PhonoPedia</p>
+                    <h1 style="width: 107%;">The {{exclusive.product.name}}</h1>
+                    <small>The {{exclusive.product.name}} Comes with unique fefeatures and best price. The phone
+                        have {{exclusive.percentage}}% discount at now only on phonophedia. This offer is exclusively for 
+                        Our customers <br></small>
+                    <a href="{% url 'variant_details' exclusive_v.id %}" class="btn">Buy Now &#8594;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <h2 class="title">From customers</h2>
+    <div class="testimonial">
+        <div class="small-container">
+            <div class="row" style="justify-content: space-between;">
+                <div class="col-3">
+                    <i class="fa fa-quote-left"></i>
+                    <p>"I recently purchased a smartphone from PhonoPedia, and I must say, the experience was outstanding! 
+                        The site was easy to navigate, and I found exactly what I was looking for at an unbeatable price. 
+                        The delivery was fast, and the packaging was top-notch. I’m thrilled with my new phone, and 
+                        PhonoPedia will definitely be my go-to for future purchases!"</p>
+                    <div class="rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <img src="{% static 'images/john.png' %}">
+                    <h3>John M</h3>
+                </div>
+                <div class="col-3">
+                    <i class="fa fa-quote-left"></i>
+                    <p>PhonoPedia exceeded my expectations in every way! From the wide range of phones to the competitive pricing, 
+                        I couldn’t be happier with my shopping experience. The customer service team was extremely helpful in 
+                        answering all my queries. I received my phone within two days, and it’s been working perfectly ever since. 
+                        Highly recommend this platform!"</p>
+                    <div class="rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <img src="{% static 'images/user-2.png' %}">
+                    <h3>Sarah L.</h3>
+                </div>
+                <div class="col-3">
+                    <i class="fa fa-quote-left"></i>
+                    <p>"What I loved most about PhonoPedia was their attention to detail. I was able to compare different models 
+                        easily, and the reviews on the site helped me make an informed decision. The checkout process was smooth, 
+                        and the delivery was surprisingly quick. Plus, the quality of the phone is exactly as described. 
+                        A fantastic experience overall!"</p>
+                    <div class="rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <img src="{% static 'images/david.png' %}">
+                    <h3>David R.</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <h2 class="title">Brands collab with</h2>
+    <!-- Brands -->
+
+    <div class="brands">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-5">
+                    <img src="{% static 'images/logo-xiaomi.png' %}">
+                </div>
+                <div class="col-5">
+                    <img src="{% static 'images/logo-oppo.png' %}">
+                </div>
+                <div class="col-5">
+                    <img src="{% static 'images/logo-samsung.png' %}">
+                </div>
+                <div class="col-5">
+                    <img src="{% static 'images/logo-oneplus.png' %}">
+                </div>
+                <div class="col-5">
+                    <img src="{% static 'images/logo-apple.png' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+{% endblock %}

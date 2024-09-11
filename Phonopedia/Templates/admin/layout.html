@@ -1,0 +1,451 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="description" content="POS - Bootstrap Admin Template">
+    <meta name="keywords"
+        content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive">
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+    <meta name="robots" content="noindex, nofollow">
+    <title>PhonoPedia Admin |{% block title %}Home {% endblock %}</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/logo-small.png' %}">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap4.min.css' %}">    
+
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
+
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+     -->
+    
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        
+        .select {
+            padding: 0 15px;
+            width: 100%;
+            border-radius: 5px;
+            border-color: #b8bcc9;
+            height: 40px;
+            color: #b8bcc9;
+            border: 1px #b8bcc9 solid;
+        }
+        .select2-container--default{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="global-loader">
+        <div class="whirly-loader"> </div>
+    </div>
+
+    <div class="main-wrapper">
+
+        <div class="header">
+
+            <div class="header-left active">
+                <a href="{% url 'admin_panel' %}" class="logo">
+                    <img src="{% static 'images/logo.png' %}" alt="">
+                </a>
+                <a href="{% url 'admin_panel' %}" class="logo-small">
+                    <img src="{% static 'images/logo.png' %}" alt="">
+                </a>
+                <a id="toggle_btn" href="javascript:void(0);">
+                </a>
+            </div>
+
+            <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+
+            <ul class="nav user-menu">
+
+                <li class="nav-item">
+                    <div class="top-nav-search">
+                        <a href="javascript:void(0);" class="responsive-search">
+                            <i class="fa fa-search"></i>
+                        </a>
+                        <form action="#">
+                            <div class="searchinputs">
+                                <input type="text" placeholder="Search Here ...">
+                                <div class="search-addon">
+                                    <span><img src="{% static 'img_admin/icons/closes.svg' %}" alt="img"></span>
+                                </div>
+                            </div>
+                            <a class="btn" id="searchdiv"><img src="{% static 'img_admin/icons/search.svg' %}"
+                                    alt="img"></a>
+                        </form>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+                        <img src="{% static 'img_admin/icons/notification-bing.svg' %}" alt="img"> <span
+                            class="badge rounded-pill">4</span>
+                    </a>
+                    <div class="dropdown-menu notifications">
+                        <div class="topnav-dropdown-header">
+                            <span class="notification-title">Notifications</span>
+                            <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
+                        </div>
+                        <div class="noti-content">
+                            <ul class="notification-list">
+                                <li class="notification-message">
+                                    <a href="activities.html">
+                                        <div class="media d-flex">
+                                            <span class="avatar flex-shrink-0">
+                                                <img alt="" src="{% static 'img_admin/profiles/avatar-02.jpg' %}">
+                                            </span>
+                                            <div class="media-body flex-grow-1">
+                                                <p class="noti-details"><span class="noti-title">John Doe</span> added
+                                                    new task <span class="noti-title">Patient appointment booking</span>
+                                                </p>
+                                                <p class="noti-time"><span class="notification-time">4 mins ago</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="topnav-dropdown-footer">
+                            <a href="activities.html">View all Notifications</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown has-arrow main-drop">
+                    <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
+                        <span class="user-img"><img src="{% static 'images/logo-small.png' %}" alt="">
+                            <span class="status online"></span></span>
+                    </a>
+                    <div class="dropdown-menu menu-drop-user">
+                        <div class="profilename">
+                            <div class="profileset">
+                                <span class="user-img"><img src="{% static 'images/logo-small.png' %}" alt="">
+                                    <span class="status online"></span></span>
+                                <div class="profilesets">
+                                    <h6>{{admin.username}}</h6>
+                                    <h5>Admin</h5>
+                                </div>
+                            </div>
+                            <hr class="m-0">
+                            <a class="dropdown-item" href="{% url 'profile' user.id %}"> <i class="me-2" data-feather="user"></i> My Profile</a>
+                            <!-- <a class="dropdown-item" href="generalsettings.html"><i class="me-2"
+                                    data-feather="settings"></i>Settings</a> -->
+                            <hr class="m-0">
+                            <a class="dropdown-item logout pb-0" href="{% url 'signout' %}"><img
+                                    src="{% static 'img_admin/icons/log-out.svg' %}" class="me-2" alt="img">Logout</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+
+            <div class="dropdown mobile-user-menu">
+                <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="profile.html">My Profile</a>
+                    <a class="dropdown-item" href="generalsettings.html">Settings</a>
+                    <a class="dropdown-item" href="{% url 'signout' %}">Logout</a>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar" id="sidebar">
+            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: 100%; height: 384px;">
+            <div class="sidebar-inner slimscroll" style="width: 100%; height: 384px;">
+                <div id="sidebar-menu" class="sidebar-menu" style="width: 100%;">
+                    <ul>
+                        <li class="active">
+                            <a href="{% url 'admin_panel' %}"><img src="{% static 'img_admin/icons/dashboard.svg' %}" alt="img"><span>Dashboard</span> </a>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/product.svg' %}" alt="img"><span>Product</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'admin_productlist' %}">Product List</a></li>
+                                <li><a href="{% url 'add_product' %}">Add Product</a></li>
+                                <li><a href="{% url 'category_list' %}">Category List</a></li>
+                                <li><a href="{% url 'add_category' %}">Add Category</a></li>
+                                <li><a href="{% url 'brand_list' %}">Brand List</a></li>
+                                <li><a href="{% url 'add_brand' %}">Add Brand</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/sales1.svg' %}" alt="img"><span> Sales</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'sales_report' %}">Sales report</a></li>
+                                <!-- <li><a href="pos.html">POS</a></li>
+                                <li><a href="pos.html">New Sales</a></li>
+                                <li><a href="salesreturnlists.html">Sales Return List</a></li>
+                                <li><a href="createsalesreturns.html">New Sales Return</a></li> -->
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/purchase1.svg' %}"
+                                    alt="img"><span>
+                                    Orders</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'view_orders_admin' %}">Orders List</a></li>
+                                <!-- <li><a href="addpurchase.html">Add Purchase</a></li>
+                                <li><a href="importpurchase.html">Import Purchase</a></li> -->
+                            </ul>
+                        </li>
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/expense1.svg' %}"
+                                    alt="img"><span>
+                                    Expense</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="expenselist.html">Expense List</a></li>
+                                <li><a href="createexpense.html">Add Expense</a></li>
+                                <li><a href="expensecategory.html">Expense Category</a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/quotation1.svg' %}"
+                                    alt="img"><span>
+                                    Quotation</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="quotationList.html">Quotation List</a></li>
+                                <li><a href="addquotation.html">Add Quotation</a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/transfer1.svg' %}"
+                                    alt="img"><span>
+                                    Transfer</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="transferlist.html">Transfer List</a></li>
+                                <li><a href="addtransfer.html">Add Transfer </a></li>
+                                <li><a href="importtransfer.html">Import Transfer </a></li>
+                            </ul>
+                        </li> -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/return1.svg' %}"
+                                    alt="img"><span>
+                                    Return</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="salesreturnlist.html">Sales Return List</a></li>
+                                <li><a href="createsalesreturn.html">Add Sales Return </a></li>
+                                <li><a href="purchasereturnlist.html">Purchase Return List</a></li>
+                                <li><a href="createpurchasereturn.html">Add Purchase Return </a></li>
+                            </ul>
+                        </li>
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/users1.svg' %}"
+                                    alt="img"><span>
+                                    People</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="customerlist.html">Customer List</a></li>
+                                <li><a href="addcustomer.html">Add Customer </a></li>
+                                <li><a href="supplierlist.html">Supplier List</a></li>
+                                <li><a href="addsupplier.html">Add Supplier </a></li>
+                                <li><a href="userlist.html">User List</a></li>
+                                <li><a href="adduser.html">Add User</a></li>
+                                <li><a href="storelist.html">Store List</a></li>
+                                <li><a href="addstore.html">Add Store</a></li>
+                            </ul>
+                        </li> -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/places.svg' %}"
+                                    alt="img"><span>
+                                    Coupon</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'add_coupon' %}">Add Coupon</a></li>
+                                <li><a href="{% url 'list_coupons' %}">All coupons</a></li>
+                            </ul>
+                        </li>
+                        <!-- <li>
+                            <a href="components.html"><i data-feather="layers"></i><span> Components</span> </a>
+                        </li>
+                        <li>
+                            <a href="blankpage.html"><i data-feather="file"></i><span> Blank Page</span> </a>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="alert-octagon"></i> <span> Error Pages
+                                </span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="error-404.html">404 Error </a></li>
+                                <li><a href="error-500.html">500 Error </a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="box"></i> <span>Elements </span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="sweetalerts.html">Sweet Alerts</a></li>
+                                <li><a href="tooltip.html">Tooltip</a></li>
+                                <li><a href="popover.html">Popover</a></li>
+                                <li><a href="ribbon.html">Ribbon</a></li>
+                                <li><a href="clipboard.html">Clipboard</a></li>
+                                <li><a href="drag-drop.html">Drag & Drop</a></li>
+                                <li><a href="rangeslider.html">Range Slider</a></li>
+                                <li><a href="rating.html">Rating</a></li>
+                                <li><a href="toastr.html">Toastr</a></li>
+                                <li><a href="text-editor.html">Text Editor</a></li>
+                                <li><a href="counter.html">Counter</a></li>
+                                <li><a href="scrollbar.html">Scrollbar</a></li>
+                                <li><a href="spinner.html">Spinner</a></li>
+                                <li><a href="notification.html">Notification</a></li>
+                                <li><a href="lightbox.html">Lightbox</a></li>
+                                <li><a href="stickynote.html">Sticky Note</a></li>
+                                <li><a href="timeline.html">Timeline</a></li>
+                                <li><a href="form-wizard.html">Form Wizard</a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="bar-chart-2"></i> <span> Charts </span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="chart-apex.html">Apex Charts</a></li>
+                                <li><a href="chart-js.html">Chart Js</a></li>
+                                <li><a href="chart-morris.html">Morris Charts</a></li>
+                                <li><a href="chart-flot.html">Flot Charts</a></li>
+                                <li><a href="chart-peity.html">Peity Charts</a></li>
+                            </ul>
+                        </li> -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="award"></i><span> Offers </span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'add_product_offer' %}">Add a product offer</a></li>
+                                <li><a href="{% url 'add_brand_offer' %}">Add a brand offer</a></li>
+                                <li><a href="{% url 'view_product_offers' %}">All product offers</a></li>
+                                <li><a href="{% url 'view_brand_offers' %}">All brand offers</a></li>
+                                <!-- <li><a href="icon-fontawesome.html">All category offers</a></li> -->
+                                <!-- <li><a href="icon-fontawesome.html">Add a new offer</a></li> -->
+                            </ul>
+                        </li>
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="columns"></i> <span> Forms </span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="form-basic-inputs.html">Basic Inputs </a></li>
+                                <li><a href="form-input-groups.html">Input Groups </a></li>
+                                <li><a href="form-horizontal.html">Horizontal Form </a></li>
+                                <li><a href="form-vertical.html"> Vertical Form </a></li>
+                                <li><a href="form-mask.html">Form Mask </a></li>
+                                <li><a href="form-validation.html">Form Validation </a></li>
+                                <li><a href="form-select2.html">Form Select2 </a></li>
+                                <li><a href="form-fileupload.html">File Upload </a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><i data-feather="layout"></i> <span> Table </span> <span
+                                    class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="tables-basic.html">Basic Tables </a></li>
+                                <li><a href="data-tables.html">Data Table </a></li>
+                            </ul>
+                        </li> -->
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/product.svg' %}"
+                                    alt="img"><span>
+                                    Application</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="chat.html">Chat</a></li>
+                                <li><a href="calendar.html">Calendar</a></li>
+                                <li><a href="email.html">Email</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/time.svg' %}"
+                                    alt="img"><span>
+                                    Report</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="purchaseorderreport.html">Purchase order report</a></li>
+                                <li><a href="inventoryreport.html">Inventory Report</a></li>
+                                <li><a href="salesreport.html">Sales Report</a></li>
+                                <li><a href="invoicereport.html">Invoice Report</a></li>
+                                <li><a href="purchasereport.html">Purchase Report</a></li>
+                                <li><a href="supplierreport.html">Supplier Report</a></li>
+                                <li><a href="customerreport.html">Customer Report</a></li>
+                            </ul>
+                        </li> -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/users1.svg' %}"
+                                    alt="img"><span>
+                                    Users</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="{% url 'add_user'%}">New User </a></li>
+                                <li><a href="{% url 'view_users' %}">Users List</a></li>
+                            </ul>
+                        </li>
+                        <!-- <li class="submenu">
+                            <a href="javascript:void(0);"><img src="{% static 'img_admin/icons/settings.svg' %}"
+                                    alt="img"><span>
+                                    Settings</span> <span class="menu-arrow"></span></a>
+                            <ul>
+                                <li><a href="generalsettings.html">General Settings</a></li>
+                                <li><a href="emailsettings.html">Email Settings</a></li>
+                                <li><a href="paymentsettings.html">Payment Settings</a></li>
+                                <li><a href="currencysettings.html">Currency Settings</a></li>
+                                <li><a href="grouppermissions.html">Group Permissions</a></li>
+                                <li><a href="taxrates.html">Tax Rates</a></li>
+                            </ul>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+        {% block content %}
+            <!-- Page-specific content -->
+        {% endblock %}
+    </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
+        
+
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/moment.min.js' %}" ></script>
+        <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}" ></script>
+        <script src="{% static 'js/feather.min.js' %}"></script>
+        
+        <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+
+        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
+
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+        <script src="{% static  'plugins/apexchart/apexcharts.min.js' %}"></script>
+        <script src="{% static  'plugins/apexchart/chart-data.js' %}"></script>
+<!-- 
+        <script type="text/javascript">
+            function confirmDelete() {
+                return confirm("Are you sure you want to delete this item?");
+            }
+            
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('.my-select').select2();
+            });
+        </script> -->
+
+        <script src="{% static 'js/script.js' %}"></script>
+        
+</body>
+
+</html>

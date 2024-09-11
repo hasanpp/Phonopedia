@@ -1,0 +1,105 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<style>
+    .order-card {
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    .status-tag {
+        padding: 5px;
+        border-radius: 5px;
+        color: #fff;
+    }
+    .delivered {
+        background-color: #28a745; /* Green */
+    }
+    .placed {
+        background-color: #007bff; /* Blue */
+    }
+    .cancelled {
+        background-color: #d7f113; /* Green */
+    }
+    .Out {
+        background-color: #d7f113; /* Green */
+    }
+    .Shipped {
+        background-color: #d7f113; /* Green */
+    }
+    .Dispatched {
+        background-color: #d7f113; /* Green */
+    }
+    .Preparing {
+        background-color: #d7f113; /* Green */
+    }
+    .returned {
+        background-color: #ff0022; /* Blue */
+    }
+    .row{
+     justify-content: space-between;   
+    }
+    .col-md-8{
+        display: contents;
+    }
+    .col-md-8 img{
+        width: 50px;
+    }
+</style>
+<div class="small-container">
+    <div class="row row-2">
+        <h2>Orders</h2>
+        <!-- <select>
+            <option>Default Sort</option>
+            <option>Sort By Price</option>
+            <option>Sort By Popularity</option>
+            <option>Sort By Rating</option>
+            <option>Sort By Sale</option>
+        </select> -->
+    </div>
+</div>
+<br>
+
+<!-- Orderd items details -->
+
+<div class="container mt-5">
+    {% for order_item in order_items%}
+        <div class="order-card">
+            <a href="{% url 'order_details' order_item.id %}">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-md-8 col-sm-6">
+                    <img src="{{order_item.variant.image.url}}" alt="">
+                        <h5>{{order_item.variant.product.name}}</h5>
+                        <p>Quantity: {{order_item.quantity}}</p>
+                    <p>Ordered at: {{order_item.order.order_date}}</p>
+                    </div>
+                    <div class="col-md-4 col-sm-6 text-right">
+                        {% if order_item.order.pyment_method == 'Razorpay' and order_item.order.pyment_status == 'pending' %}
+                            <span class="status-tag returned">Pyment failed</span>
+                        {%else%}
+                            <span class="status-tag {{order_item.status}}">{{order_item.status}}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+<br><br><br><br><br>
+<br><br><br><br><br>
+<br><br><br><br><br>
+<script>
+    var MenuItems = document.getElementById("MenuItems");
+    MenuItems.style.maxHeight = "0px";
+    function menutoggle() {
+        if (MenuItems.style.maxHeight == "0px") {
+            MenuItems.style.maxHeight = "200px"
+        }
+        else {
+            MenuItems.style.maxHeight = "0px"
+        }
+    }
+</script>
+{% endblock %}

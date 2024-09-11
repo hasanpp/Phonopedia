@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhonoPedia |{% block title %}Home {% endblock %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/logo-small.png' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body >
+    
+    <div class="header" style=" background: transparent;">
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="logo" width="125px"></a>
+                </div>
+                <nav>
+                    <ul id="MenuItems">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'list_products' %}">Products</a></li>
+                        <li><a href="{% url 'view_orders' %}">Orders</a></li>
+                        <li><a href="{% url 'wishlist' %}">wishlist</a></li>
+                    </ul>
+                </nav>
+                <a href="{% url 'view_cart' %}"><img src="{% static 'images/cart.svg' %}" width="30px" height="30px"></a>&nbsp; &nbsp;
+                <a href="{% url 'account_details' %}"><img src="{% static 'images/User.svg' %}" width="30px" height="30px"></a>&nbsp; &nbsp;
+                {% if user.is_authenticated %}
+                <a href="{% url 'signout'%}" style="color: red;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                  </svg>
+                </a>
+                {% endif %}
+                <img src="{% static 'images/menu.png' %}" class="menu-icon" onclick="menutoggle()">
+            </div>
+        </div>
+    </div>
+    
+    {% block content %}
+    
+    <!-- Page-specific content -->
+    {% endblock %}
+
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col-1">
+                    <h3>Download Our App</h3>
+                    <p>Download App for Android and ios mobile phone.</p>
+                    <div class="app-logo">
+                        <img src="{% static 'images/play-store.png' %}">
+                        <img src="{% static 'images/app-store.png' %}">
+                    </div>
+                </div>
+                <div class="footer-col-2">
+                    <img src="{% static 'images/logo-white.png' %}">
+                    <p>Our Purpose Is not only sell the product we also provide the after sails support.
+                    </p>
+                </div>
+                <div class="footer-col-3">
+                    <h3>PhonoPedia</h3>
+                    <ul>
+                        <a href="{% url 'home' %}" style="color: #8a8a8a; ">
+                            <li>Home</li>
+                        </a>
+                        <a href="{% url 'list_products' %}" style="color: #8a8a8a; ">
+                            <li>Products</li>
+                        </a>
+                        <a href="{% url 'view_orders' %}" style="color: #8a8a8a; ">
+                            <li>Orders</li>
+                        </a>
+                        <a href="{% url 'view_cart' %}" style="color: #8a8a8a; ">
+                            <li>Cart</li>
+                        </a>
+                    </ul>
+                </div>
+                <div class="footer-col-4">
+                    <h3>Follow Us</h3>
+                    <ul>
+                        <li>Facebook</li>
+                        <li>Twitter</li>
+                        <li>Instagram</li>
+                        <li>Youtube</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="copyright">Copyright 2024 - PhonoPedia</p>
+        </div>
+    </div>
+
+    <!-- javascript -->
+
+    <script>
+        var MenuItems = document.getElementById("MenuItems");
+        MenuItems.style.maxHeight = "0px";
+        function menutoggle() {
+            if (MenuItems.style.maxHeight == "0px") {
+                MenuItems.style.maxHeight = "200px"
+            }
+            else {
+                MenuItems.style.maxHeight = "0px"
+            }
+        }
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.add-to-cart-btn').click(function(e) {
+            e.preventDefault();
+            var variantId = $(this).data('variant-id');
+            
+            $.ajax({
+                url: "{% url 'add_to_cart' 0 %}".replace('0', variantId),
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'added' || response.status === 'quantity_updated') {
+                        Toastify({
+                            text: "Item added to cart!",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#4CAF50",
+                            stopOnFocus: true,
+                        }).showToast();
+                    } else if (response.status === 'unauthenticated') {
+                        Toastify({
+                            text: "Please sign in to add items to your cart.!",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "red",
+                            stopOnFocus: true,
+                        }).showToast();
+                    } else if (response.status === 'max') {
+                        Toastify({
+                            text: "The item rached max limit on your cart.",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "yellow",
+                            stopOnFocus: true,
+                        }).showToast();
+                    }
+                }
+            });
+        });
+        
+        $('.add-to-wishlist-btn').click(function(e) {
+            e.preventDefault();
+            var variantId = $(this).data('variant-id');
+            
+            $.ajax({
+                url: "{% url 'add_to_wishlist' 0 %}".replace('0', variantId),
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'added') {
+                        Toastify({
+                            text: "Item added to wishlist!",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#4CAF50",
+                            stopOnFocus: true,
+                        }).showToast();
+                    } else if (response.status === 'exists') {
+                        Toastify({
+                            text: "Item already in wishlist!",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "yellow",
+                            stopOnFocus: true,
+                        }).showToast();
+                    } else if (response.status === 'unauthenticated') {
+                        Toastify({
+                            text: "Please sign in to add items to your wishlist.!",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "red",
+                            stopOnFocus: true,
+                        }).showToast();
+                    }
+                }
+            });
+        });
+    });
+    </script>
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const offeredPrice = document.querySelectorAll('.offered-price')
+        const offer = document.querySelectorAll('.offer')
+        const vPrice = document.querySelectorAll('.variant-price')
+        for (let i = 0; i < offeredPrice.length; i++) {
+            offeredP = vPrice[i].textContent - (vPrice[i].textContent*offer[i].textContent/100)
+            offeredPrice[i].textContent = '₹' + offeredP
+          }
+
+        const ofer_percent = offer.textContent;
+        const variantPrice = vPrice.textContent;
+        console.log(variantPrice,offeredPrice)
+        let price = variantPrice - (variantPrice*ofer_percent/100)
+        offeredPrice.textContent = price
+    });
+   </script>
+   
+</body>
+
+</html>

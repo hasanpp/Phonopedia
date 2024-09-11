@@ -1,0 +1,799 @@
+
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .container {
+        margin: 20px auto;
+        padding: 20px;
+        color: #212A31;
+    }
+    
+    h2, h3, h4 {
+        color: #2E3944;
+    }
+    .address-selection, .order-summary, .payment-selection, .place-order {
+        margin: 10px;
+        border: 1px solid #e0e0e0;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    
+    .place-order {
+        border: none;
+    }
+    .address-options label, .payment-options img {
+        margin-right: 10px;
+    }
+    
+    .new-address-form input {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #e0e0e0;
+        border-radius: 29px;
+    }
+    .coupens_button{
+        color: #124E66;
+        border: #124E66 solid 1px;
+        background-color: white;
+        justify-content: center;
+        display: flex;
+        width: 95%;
+        border-radius: 20px;
+        padding: 10px 0px;
+    }
+    .order-items .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+    }
+    
+    .order-items img {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+    }
+    
+    .order-totals {
+        margin: 20px 0;
+    }
+    
+    .order-totals span {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .apply-coupon input {
+        width: calc(100% - 100px);
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        display: inline-block;
+    }
+    
+    .apply-coupon button {
+        width: 80px;
+        padding: 10px;
+        background-color: #124e66;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    
+    .apply-coupon button:hover {
+        width: 80px;
+        padding: 10px;
+        background-color: #ffffff;
+        color: #124e66;
+        border: solid #124e66;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    
+    .payment-options img {
+        width: 80px;
+        height: 40px;
+        border-radius: 25px;
+        cursor: pointer;
+        border: #124E66 SOLID;
+        padding: 0px 9px 0px;
+    }
+    
+    .payment-options{
+        justify-content: center;
+        display: flex;
+    
+    }
+    .place-order button {
+        width: 100%;
+        padding: 15px;
+        background-color: #124e66;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+    }
+
+    
+
+    .place-order .place-order-link {
+        width: 100%;
+        padding: 15px;
+        background-color: #124e66;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+    }
+    
+
+    .place-order .place-order-link:hover {
+        width: 100%;
+        padding: 15px;
+        background-color: #ffffff;
+        color: #124e66;
+        border: solid #124e66;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+    }
+    .payment-selection {
+        margin: 10px 50px;
+        width: 96.5%;
+        margin-left: 1.9%;
+    }
+    .address-selection {
+        width: 65%;
+    }
+    .order-summary {
+        width: 30%;
+    }
+    .payment-options img.selected {
+        border: 2px solid green;
+    }
+    @media only screen and (max-width: 700px) {
+        .checkout-section {
+            flex-direction: column;
+        }
+
+        .address-selection{
+            width: 90%;
+        }
+        .order-summary {
+            width: 90%;
+        }
+        .payment-selection {
+            width: 90%;
+            margin: 18px;
+        }
+        .apply-coupon input {
+            width: 75%;
+            margin-bottom: 10px;
+        }
+    
+        .apply-coupon button {
+            width: 23%;
+        }
+    }
+    
+</style>
+<div class="container ">
+        <h2>Check out</h2>
+        <div class="row " style="display: flex;">
+            <div class="address-selection " >
+                <h3>Please select a delivery Address</h3>
+                <br>
+                <div class="address-options">
+                    {% for address in addresses%}
+                        <label>
+                            <a href="#" class="view-address" data-addres-id="{{ address.id }}">
+                                <small>{{address.place}},{{address.pin}}</small><br>
+                                <small>{{address.house_name}}</small></p><br>
+                            </a>
+                        </label>
+                    {% endfor %}
+                </div>
+                <br>
+                <form id="checkoutForm" action="{% url 'order' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="new-address-form">
+                        <input name="state" type="text" placeholder="State" value="" id="state" required>
+                        <input name="district" type="text" placeholder="District" value="" id="district" required>
+                        <input name="city" required type="text" placeholder="City" value="" id="city">
+                        <input name="place" required id="place" type="text" placeholder="Place" value="">
+                        <input name="pin" required id="pin" type="number" placeholder="Pin code" value="" maxlength="6" minlength="6">
+                        <input name="road" required id="road" type="text" placeholder="Road" value="">
+                        <input name="house_name" required id="house_name" type="text" placeholder="House name" value="">
+                        <input name="landmark" required id="landmark" type="text" placeholder="Landmark" value="">
+                        <input name="name" required id="name" type="text" placeholder="Name" value="{{user.first_name}} {{user.last_name}}">
+                        <input name="phone" required id="phone" type="text" placeholder="Phone" value="{{user.phone}}" onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')"><br><br>
+                        <label style="display: flex;">
+                            <input type="checkbox" name="save_address" value="yes" style="width: 10%; margin-top: -6px;" id="save_address">
+                            Save this address for next time
+                        </label>
+                        <input style="display: none;" name="discount" required id="discount" type="number"  value="0">
+                        <input style="display: none;" name="pymd" required id="pymd" type="text"  value="">
+                        <input style="display: none;" name="coupon_code" id="coupon_code" type="text" value="">
+                    </div>
+                </form>
+            </div>
+
+            <div class="order-summary ">
+                <h3>Price details</h3>
+                <br><br>
+                <div class="order-items">
+                    {% for cart in carts%}
+                        <div class="item">
+                            <img src="{{cart.variant.image.url}}" alt="Product Image">
+                            <span>{{cart.variant.product.name}} : {{cart.quantity}}</span>
+                            <span>₹{{cart.price}}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br><br>
+                <div class="order-totals">
+                    <span style="font-size: large;">Subtotal</span>
+                    <span style="font-size: medium;">₹ {{subtotal}}</span>
+                    <br>
+                    <span style="font-size: large;">Delivery charge</span>
+                    <span style="font-size: medium;" >₹ 50.00</span>
+                    <br>
+                    <span style="font-size: large;">Discount</span>
+                    <span style="font-size: medium;" id="discountpersent">₹ 00.00</span>
+                    <br>
+                    <span style="font-size: large;">Total</span>
+                    <span style="font-size: medium;" id="total">₹ {{total}}</span>
+                </div>
+                <div class="apply-coupon" id="couponForm">
+                    <input style="border-radius: 50px 0px 0px 50px;" type="text" placeholder="Coupon code" readonly id="coupon-code" name="coupon">
+                    <input type="hidden" name="total_price" value="{{ total }}">
+                    <button style="border-radius: 0px 50px 50px 0px; margin-left: 1px;" id="apply-btn" type="button" >Apply</button>
+                </div>
+                {% for coupon in coupons%}
+                <br>
+                <div class="coupens">
+                    <button class="coupens_button" id="coupon-{{ forloop.counter }}" onclick="selectCoupon('{{ coupon.code }}', this)">{{coupon.percentage}} % of</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="payment-selection col-md-12" >
+            <h3 style="text-align: center;">Please select a payment method</h3>
+            <br>
+            <div class="payment-options">
+                {% if total < 100000 %}
+                <img src="{% static 'images/cod.jpeg' %}" alt="COD" onclick="pymd('cash on delivery',1)" id="1">
+                {% endif %}
+                {% if wallet.balence >=  total  %}
+                <img src="{% static 'images/wallet.png' %}" alt="Wallet" onclick="pymd('wallet payment',2)" id="2">
+                {% endif %}
+                <img src="{% static 'images/razorpay.jpeg' %}" alt="Credit Card" onclick="pymd('razorpay',3)" id="3" >
+            </div>
+            <div class="place-order">
+                <a class="place-order-link" style="border-radius: 38px;">Place Order</a>
+            </div>
+        </div>
+</div>
+<br><br><br>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function pymd(string,num){
+        const  pymd_box = document.getElementById('pymd');
+        for (let i = 1; i < 5; i++) {
+            if (i != num) {
+            const  pymd_box_0 = document.getElementById(i);
+            pymd_box_0.style.display = 'none'
+          }
+        }
+        pymd_box.value = string ; 
+    }
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('3').onclick = function(e) {
+        e.preventDefault();
+        var addressID = $(this).data('addres-id');
+        var requiredFields = ['#state', '#district', '#city', '#place', '#pin', '#road', '#house_name', '#landmark', '#name', '#phone'];
+        var isValid = true;
+        
+        requiredFields.forEach(function(field) {
+            if ($(field).val() === '') {
+                isValid = false;
+                $(field).css('border-color', 'red'); 
+                Toastify({
+                    text: field.replace('#', '') + ' is required',
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "red",
+                    stopOnFocus: true,
+                }).showToast();
+            } else {
+                $(field).css('border-color', ''); // Reset border color if field is filled
+            }
+        });
+        
+        if (!isValid) {
+            return; // Stop the function if validation fails
+        }
+
+        var pymdValue = $('#pymd').val("");
+        var dicount = $('#discount').val();
+        dicount = Number(dicount) * 100;
+        var amount = {{amount}};
+        amount = amount - dicount;
+        
+        
+        var options = {
+            "key": "rzp_test_GX8eRsnEDJKrzD",
+            "amount": amount, 
+            "currency": "INR",
+            "name": "Phonopedia",
+            "description": "Purchase Description",
+            "image": "{% static 'images/logo-small.png' %}",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response) {
+                var save_address = 'yes';
+
+                if ($('#save_address').is(':checked')) {
+                    save_address = 'yes';
+                } else {
+                    save_address = 'no';
+                }
+                
+                
+
+                $.ajax({
+                    url: "{% url 'order' %}",
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        pymd: "Razorpay",
+                        discount: $('#discount').val(),
+                        state: $('#state').val(),
+                        district: $('#district').val(),
+                        city: $('#city').val(),
+                        place: $('#place').val(),
+                        pin: $('#pin').val(),
+                        road: $('#road').val(),
+                        house_name: $('#house_name').val(),
+                        landmark: $('#landmark').val(),
+                        name: $('#name').val(),
+                        phone: $('#phone').val(),
+                        pyst: 'done', // Set order status as 'done'
+                        coupon_code: $('#coupon_code').val(),
+                        save_address: save_address,
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('.payment-options').css("display:none;");
+                            window.location.href = "{% url 'susses' %}";
+                        } else if (response.status === 'unauthenticated') {
+                            alert('Please sign in to place an order.');
+                        }
+                    }
+                });
+            },
+            "prefill": {
+                "name": "{{ user.first_name }} {{ user.last_name }}",
+                "email": "{{ user.email }}",
+                "contact": "{{ user.phone }}"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+        // Handle payment failure
+        rzp1.on('payment.failed', function (response) {
+            
+            var save_address = 'yes';
+
+            if ($('#save_address').is(':checked')) {
+                save_address = 'yes';
+            } else {
+                save_address = 'no';
+            }
+            
+            
+
+            $.ajax({
+                url: "{% url 'order' %}",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    pymd: "Razorpay",
+                    discount: $('#discount').val(),
+                    state: $('#state').val(),
+                    district: $('#district').val(),
+                    city: $('#city').val(),
+                    place: $('#place').val(),
+                    pin: $('#pin').val(),
+                    road: $('#road').val(),
+                    house_name: $('#house_name').val(),
+                    landmark: $('#landmark').val(),
+                    name: $('#name').val(),
+                    phone: $('#phone').val(),
+                    pyst: 'pending', 
+                    coupon_code: $('#coupon_code').val(),
+                    save_address: save_address,
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('.payment-options').css("display:none;");
+                        window.location.href = "{% url 'failed' %}";
+                    } else if (response.status === 'unauthenticated') {
+                        alert('Please sign in to place an order.');
+                    }
+                }
+            });
+        });
+
+        // Handle case when user closes the Razorpay modal
+        rzp1.on('modal.close', function() {
+            alert('Payment window closed. No payment was made.');
+        });
+        
+    }
+</script>
+
+
+
+<!-- <script>
+    document.getElementById('3').onclick = function(e) {
+        e.preventDefault();
+        var addressID = $(this).data('addres-id');
+            var requiredFields = ['#state', '#district', '#city', '#place', '#pin', '#road', '#house_name', '#landmark', '#name', '#phone'];
+            var isValid = true;
+        
+            requiredFields.forEach(function(field) {
+                if ($(field).val() === '') {
+                    isValid = false;
+                    $(field).css('border-color', 'red'); 
+                    Toastify({
+                        text: field.replace('#', '') + ' is required',
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else {
+                    $(field).css('border-color', ''); // Reset border color if field is filled
+                }
+            });
+        
+            if (!isValid) {
+                return; // Stop the function if validation fails
+            }
+            var pymdValue = $('#pymd').val("");
+            var dicount = $('#discount').val();
+            dicount = Number(dicount)*100;
+            var amount = {{amount}};
+            amount = amount - dicount;
+            
+        // Fetch the razorpay_order_id from the server
+        var options = {
+            "key": "rzp_test_GX8eRsnEDJKrzD",
+            "amount": amount, // Amount is in paise
+            "currency": "INR",
+            "name": "Phonopedia",
+            "description": "Purchase Description",
+            "image": "{% static 'images/logo-small.png' %}",
+            "order_id": "{{ razorpay_order_id }}", // Razorpay Order ID from server
+            "handler": function (response) {
+                var save_address = 'yes';
+
+                if ($('#save_address').is(':checked')) {
+                    save_address = 'yes';
+                } else {
+                    save_address = 'no';
+                }
+                // Send payment response to the backend
+                $.ajax({
+                    url: "{% url 'order' %}",
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        pymd: "Razorpay",
+                        discount: $('#discount').val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        state: $('#state').val(),
+                        district: $('#district').val(),
+                        city: $('#city').val(),
+                        place: $('#place').val(),
+                        pin: $('#pin').val(),
+                        road: $('#road').val(),
+                        house_name: $('#house_name').val(),
+                        landmark: $('#landmark').val(),
+                        name: $('#name').val(),
+                        phone: $('#phone').val(),
+                        pyst: 'done',
+                        coupon_code: $('#coupon_code').val(),
+                        save_address: save_address,
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('.payment-options').css("display:none;");
+                            window.location.href = "{% url 'susses' %}";
+                        } else if (response.status === 'unauthenticated') {
+                            alert('Please sign in to place an order.');
+                        }
+                    }
+                });
+            },
+            "prefill": {
+                "name": "{{ user.first_name }} {{ user.last_name }}",
+                "email": "{{ user.email }}",
+                "contact": "{{ user.phone }}"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+    rzp1.on('payment.failed', function (response) {
+        $.ajax({
+            url: "/order/failed/",
+            type: "POST",
+            data: {
+                error_code: response.error.code,
+                error_description: response.error.description,
+                razorpay_payment_id: response.error.metadata.payment_id,
+                razorpay_order_id: response.error.metadata.order_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}"
+            },
+            success: function (data) {
+                // Redirect to order failure page
+                window.location.href = "/order/failed/";
+            }
+        });
+    });
+</script> -->
+
+<script>
+    let selectedButton = null;
+
+    // Function to set or unset the selected coupon in the input field and change button style
+    function selectCoupon(percentage, button) {
+        // Check if the clicked button is already selected (unselect if clicked again)
+        if (selectedButton === button) {
+            // Unselect the coupon
+            document.getElementById('coupon-code').value = ''; // Clear the input field
+            button.style.backgroundColor = ''; // Reset the button style
+            button.style.borderColor = '';
+            button.style.color = '';
+            selectedButton = null; // Reset the selected button
+        } else {
+            // Select the coupon
+            document.getElementById('coupon-code').value = percentage ; // Set the coupon code
+            // Reset the style of the previously selected button
+            if (selectedButton) {
+                selectedButton.style.backgroundColor = '';
+                selectedButton.style.borderColor = '';
+                selectedButton.style.color = '';
+            }
+
+            // Set the style for the currently selected button
+            button.style.backgroundColor = '#124e66';
+            button.style.borderColor = '#124e66';
+            button.style.color = 'white';
+
+            // Update the selected button reference
+            selectedButton = button;
+        }
+    }
+</script>
+<script>
+    $('#apply-btn').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '{% url "apply_coupon" %}',
+            type: 'POST',
+            data: {
+                coupon: $('input[name="coupon"]').val(),
+                total_price: $('input[name="total_price"]').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#discountpersent').text(' - ₹ ' + response.discount);
+                    $('#total').text('₹ ' + response.total);
+                    $('#coupon_code').val(response.coupon_code);
+                    $('#discount').val(response.discount);
+                    Toastify({
+                        text: "₹ "+response.discount+" ruppes was dicounded",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "green",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: response.message,
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            }
+        });
+    });
+</script>
+<script>
+    let selectedPaymentMethod = '';
+
+    function pymd(paymentMethod, id) {
+        selectedPaymentMethod = paymentMethod;
+        $('.payment-options img').removeClass('selected');
+        $('#' + id).addClass('selected');
+        $('#pymd').val(paymentMethod);
+        $('#' + id).addClass('selected');
+    }
+
+    $(document).ready(function() {
+        // Handle increase quantity
+        $('.view-address').click(function(e) {
+            e.preventDefault();
+            var addressID = $(this).data('addres-id');
+            
+            $.ajax({
+                url: "{% url 'view_address' 0 %}".replace('0', addressID),
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#state').val(response.state);
+                        $('#district').val(response.district);
+                        $('#city').val(response.city);
+                        $('#place').val(response.place);
+                        $('#pin').val(response.pin);
+                        $('#house_name').val(response.house_name);
+                        $('#landmark').val(response.landmark);
+                        $('#road').val(response.road);
+                        $('#id').val(addressID);
+                        updateCartTotals();
+                    } else if (response.status === 'unauthenticated') {
+                        alert('Please sign in to add an address.');
+                    }
+                }
+            });
+        });
+    
+        function updateCartTotals() {
+            // Optionally implement this function to update the subtotal, tax, and total on the page
+        }
+        $('.place-order-link').click(function(e) {
+            e.preventDefault();
+            var requiredFields = ['#state', '#district', '#city', '#place', '#pin', '#road', '#house_name', '#landmark', '#name', '#phone'];
+            var isValid = true;
+        
+            requiredFields.forEach(function(field) {
+                if ($(field).val() === '') {
+                    isValid = false;
+                    $(field).css('border-color', 'red'); 
+                    Toastify({
+                        text: field.replace('#', '') + ' is required',
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else {
+                    $(field).css('border-color', ''); // Reset border color if field is filled
+                }
+            });
+        
+            if (!isValid) {
+                return; // Stop the function if validation fails
+            }
+
+            if (selectedPaymentMethod === '') {
+                Toastify({
+                    text: "Please select a payment method.",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "red",
+                    stopOnFocus: true,
+                }).showToast();
+                return;
+            }
+            // Ensure the pymd is correctly passed
+            var pymdValue = $('#pymd').val();
+
+            var save_address = 'yes';
+
+            if ($('#save_address').is(':checked')) {
+                save_address = 'yes';
+            } else {
+                save_address = 'no';
+            }
+            $.ajax({
+                url: "{% url 'order' %}",
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    state: $('#state').val(),
+                    district: $('#district').val(),
+                    city: $('#city').val(),
+                    place: $('#place').val(),
+                    pin: $('#pin').val(),
+                    road: $('#road').val(),
+                    house_name: $('#house_name').val(),
+                    landmark: $('#landmark').val(),
+                    name: $('#name').val(),
+                    phone: $('#phone').val(),
+                    pymd: $('#pymd').val(),
+                    discount: $('#discount').val(),
+                    pyst: 'pending',
+                    coupon_code: $('#coupon_code').val(),
+                    save_address: save_address,
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        window.location.href = "{% url 'susses' %}";
+                    } else if (response.status === 'unauthenticated') {
+                        alert('Please sign in to place an order.');
+                    }
+                }
+            });
+        });
+        
+    });
+    
+</script>
+<script>
+    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+        // Check if the form is valid
+        if (!this.checkValidity()) {
+            event.preventDefault(); // Prevent form submission
+            alert('Please fill in all required fields.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

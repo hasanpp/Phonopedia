@@ -1,0 +1,112 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Categoreys{% endblock %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title">
+                    <h4>Product Category list</h4>
+                    <h6>View/Search product Category</h6>
+                </div>
+                <div class="page-btn">
+                    <a href="{% url 'add_category' %}" class="btn btn-added"> <img src="{% static 'img_admin/icons/plus.svg' %}" class="me-1" alt="img">Add Category</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-top">
+                        <div class="search-set">
+                            <div class="search-path">
+                                <a class="btn btn-filter" id="filter_search">
+                                    <img src="{% static 'img_admin/icons/filter.svg' %}" alt="img">
+                                    <span><img src="{% static 'img_admin/icons/closes.svg' %}" alt="img"></span>
+                                </a>
+                            </div>
+                            <div class="search-input">
+                                <a  class="btn btn-searchset"><img src="{% static 'img_admin/icons/search-white.svg' %}" alt="img"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" id="filter_inputs">
+                        <div class="card-body pb-0">
+                            <div class="row">
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <select class="select">
+                                            <option>Choose Category</option>
+                                            <option>Computers</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <select class="select">
+                                            <option>Choose Sub Category</option>
+                                            <option>Fruits</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-6 col-12">
+                                    <div class="form-group">
+                                        <select class="select">
+                                            <option>Choose Sub Brand</option>
+                                            <option>Iphone</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1 col-sm-6 col-12 ms-auto">
+                                    <div class="form-group">
+                                        <a class="btn btn-filters ms-auto"><img
+                                                src="{% static 'img_admin/icons/search-whites.svg' %}" alt="img"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table  datanew">
+                            <thead>
+                                <tr>
+                                    <th>Category name</th>
+                                    <th>Description</th>
+                                    <th>Products</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cateogry in categoryes%}
+                                    <tr>
+                                        <td class="productimgname" style="    margin-top: 42px;"><a href="{% url 'edit_category' cateogry.id %}">{{cateogry.name}}</a></td>
+                                        <td style="white-space: normal;"><p>{{cateogry.description}}</p></td>
+                                        <td><a href="{% url 'product_list_category' cateogry.id %}"><span
+                                            class="bg-lightyellow badges">Products</span></a>
+                                        </td>
+                                        <td>
+                                            
+                                            <a class="me-3 confirm-text" href="{% url 'edit_cateogry_status' cateogry.id %}">
+                                                {% if cateogry.is_active %}
+                                                    <span class="bg-lightred badges">
+                                                        Block
+                                                    </span>
+                                                {% else %}
+                                                    <span class="bg-lightgreen badges">
+                                                        Unblock
+                                                    </span>
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

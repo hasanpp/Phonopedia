@@ -1,0 +1,497 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Products{% endblock %}
+{% block content %}
+
+<!-- All Products -->
+<style>
+    .sidenav {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #ffffff;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+        padding-left: 20px;
+    }
+
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidenav a:hover {
+        color: #f1f1f1;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+        margin-top: 50px;
+    }
+
+    @media only screen and (min-width: 800px) {
+        .serch_frm {
+            width: 90%;
+            margin-left: 5%;
+            display: flex;
+            justify-content: end;
+        }
+
+        .serch_input {
+            border-radius: 25px;
+            height: 100%;
+            border: #748d92 solid;
+            background-color: transparent;
+        }
+
+        .serch_input {
+            border-radius: 25px;
+            height: 100%;
+            border: #748d92 solid;
+            background-color: transparent;
+        }
+
+        .serch_submit {
+            height: 60%;
+            color: #124e66;
+            border: none;
+            background: transparent;
+            width: 6%;
+            margin: -65px;
+        }
+
+        ::placeholder {
+            color: #212a31;
+            opacity: 1;
+        }
+    }
+
+    .page-btn span {
+        border: 1px solid #124e66
+    }
+
+    .page-btn span:hover {
+        background: #124e66;
+        color: white;
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 90px;
+        }
+
+        .sidenav a {
+            font-size: 18px;
+        }
+    }
+</style>
+
+
+<div class="small-container">
+    <div class="search" style="display: flex;">
+        <form action="javascript:void(0);" class="serch_frm" onsubmit="searchProducts()">
+            <input class="serch_input" type="text" id="search-bar" placeholder="Search">
+
+        </form>
+    </div>
+</div>
+
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <br>
+    <!-- Filter by Category -->
+    <h3>Category</h3><br>
+    <select id="filter-category" onchange="filterProducts()">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category.name }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <!-- Filter by Price -->
+    <h3>Price</h3>
+    <label for="min-price">Min Price: ₹</label>
+    <input type="number" id="min-price" min="0" step="100" onchange="filterProducts()">
+    <br>
+    <label for="max-price">Max Price: ₹</label>
+    <input type="number" id="max-price" min="0" step="100" onchange="filterProducts()">
+
+    <br><br>
+    <!-- Filter by Brand -->
+    <h3>Brand</h3>
+    {% for brand in brands %}
+    <label><input type="checkbox" class="brand-filter" value="{{ brand.name }}" onchange="filterProducts()"> {{ brand.name }}</label><br>
+    {% endfor %}
+    <br>
+    <!-- Filter by Color -->
+    <h3>Color</h3>
+    {% for color in colors %}
+    <label><input type="checkbox" class="color-filter" value="{{ color }}" onchange="filterProducts()">
+        &nbsp;&nbsp;&nbsp;{{ color }}</label><br>
+    {% endfor %}
+</div>
+
+
+<div class="small-container">
+    <div class="row row-2">
+        <h2>All Products</h2>
+
+        <select id="sort-options" onchange="sortProducts()">
+            <option selected value="az">Sorting</option>
+            <option value="price_low_to_high">Price: Low to High</option>
+            <option value="price_high_to_low">Price: High to Low</option>
+            <option value="new_arrivals">New Arrivals</option>
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+        </select>
+    </div>
+    <span style="font-size:30px;cursor:pointer; color: #2E3944;" onclick="openNav()">Filter
+        <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" fill="currentColor" class="bi bi-funnel"
+            viewBox="0 0 16 16">
+            <path
+                d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z" />
+        </svg>
+
+    </span>
+    <div class="row d-flex space-between justify-content-start" id="products-container" style="flex-wrap: wrap;">
+        {% for variant in variants %}
+        <div class="col-4 product-item" style=" margin: 10px 30px ; height:485px;"
+            data-name="{{ variant.product.name }}" data-price="{{ variant.price }}"
+            data-category="{{ variant.product.category.name }}" data-brand="{{ variant.product.brand.name }}"
+            data-color="{{ variant.color }}" data-date="{{ variant.created_at|date:'Y-m-d' }}">
+            <a href="{% url 'variant_details' variant.id %}">
+                <img style="width: 250px; height: 250px;" src="{{ variant.image.url }}">
+                <h4>{{ variant.product.name }}</h4>
+                <!-- <div class="rating">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-o"></i>
+                </div> -->
+                {% if variant.product.id in offerd_product_ides %}
+                    {% for p_offer in p_offers%}
+                        {% if p_offer.product.id == variant.product.id %}
+                            {% if variant.product.brand.id in offerd_brand_ides %}
+                                {% for b_offer in b_offers%}
+                                    {% if b_offer.brand.id == variant.product.brand.id %}
+                                        {% if b_offer.percentage > p_offer.percentage%}
+                                            <h5><s>₹{{variant.price}}</s></h5>
+                                            <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{b_offer.percentage}} % off !!</h5>
+                                            <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                            <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                                            <p class="offered-price"></p>
+                                        {% else %}
+                                            <h5><s>₹{{variant.price}}</s></h5>
+                                            <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                            <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                            <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                            <p class="offered-price"></p>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% else%}
+                                <h5><s>₹{{variant.price}}</s></h5>
+                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                                <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                                <h5 style="display: none;" class="offer" >{{p_offer.percentage}}</h5>
+                                <p class="offered-price"></p>
+                            {% endif %}
+
+                        {% endif %}
+                    {% endfor %}
+                {% elif variant.product.brand.id in offerd_brand_ides %}
+                    {% for b_offer in b_offers%}
+                        {% if b_offer.brand.id == variant.product.brand.id %}
+                            <h5><s>₹{{variant.price}}</s></h5>
+                            <h5 class="price_4" style="color: cadetblue; font-size: large;">!!{{b_offer.percentage}} % off !!</h5>
+                            <h5 class="variant-price" style="display: none;">{{variant.price}}</h5>
+                            <h5 style="display: none;" class="offer" >{{b_offer.percentage}}</h5>
+                            <p class="offered-price"></p>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p>₹{{variant.price}}</p>
+                {% endif %}
+            </a>
+            {% if not variant.is_active %}
+            <p style="color: burlywood;">Unavailable</p>
+            {% elif not variant.product.is_active %}
+            <p style="color: burlywood;">Unavailable</p>
+            {% elif variant.quantity > 0 %}
+            <p style="color: chartreuse;">In stock {{ variant.quantity }} pice</p>
+            {% elif variant.quantity == 0 %}
+            <p style="color: red;">Out of stock</p>
+            {% endif %}
+            <br>
+            <div class="wish_cart">
+                <button class="cart add-to-cart" onclick="addtocart('{{variant.id}}')">Add to cart</button>
+                <button class="wishlist add-to-wishlist" onclick="addtowishlist('{{variant.id}}')">Add to
+                    wishlist</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<br><br><br><br><br>
+<div id="pagination-controls" class="page-btn" style="display: flex; justify-content: end; margin-right: 30px;">
+    <span>1</span>
+    <span>2</span>
+    <span>3</span>
+    <span>4</span>
+    <span>&#8594;</span>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function addtocart(variantId) {
+        $.ajax({
+            url: "{% url 'add_to_cart' 0 %}".replace('0', variantId),
+            type: 'GET',
+            success: function (response) {
+                if (response.status === 'added' || response.status === 'quantity_updated') {
+                    Toastify({
+                        text: "Item added to cart!",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else if (response.status === 'unauthenticated') {
+                    Toastify({
+                        text: "Please sign in to add items to your cart.!",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else if (response.status === 'max') {
+                    Toastify({
+                        text: "The item rached max limit on your cart.",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "yellow",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            }
+        });
+    }
+
+    function addtowishlist(variantId) {
+
+        $.ajax({
+            url: "{% url 'add_to_wishlist' 0 %}".replace('0', variantId),
+            type: 'GET',
+            success: function (response) {
+                if (response.status === 'added') {
+                    Toastify({
+                        text: "Item added to wishlist!",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else if (response.status === 'exists') {
+                    Toastify({
+                        text: "Item already in wishlist!",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "yellow",
+                        stopOnFocus: true,
+                    }).showToast();
+                } else if (response.status === 'unauthenticated') {
+                    Toastify({
+                        text: "Please sign in to add items to your wishlist.!",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "red",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            }
+        });
+    }
+</script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const offeredPrice = document.querySelectorAll('.offered-price')
+        const offer = document.querySelectorAll('.offer')
+        const vPrice = document.querySelectorAll('.variant-price')
+        for (let i = 0; i < offeredPrice.length; i++) {
+            offeredP = vPrice[i].textContent - (vPrice[i].textContent*offer[i].textContent/100)
+            offeredPrice[i].textContent = '₹' + offeredP
+          }
+
+        const ofer_percent = offer.textContent;
+        const variantPrice = vPrice.textContent;
+        console.log(variantPrice,offeredPrice)
+        let price = variantPrice - (variantPrice*ofer_percent/100)
+        offeredPrice.textContent = price
+
+
+        const productsPerPage = 9;
+        const productsContainer = document.getElementById('products-container');
+        const paginationControls = document.getElementById('pagination-controls');
+        let products = Array.from(productsContainer.children);
+        let filteredProducts = products;  // This will store the filtered, sorted, and searched products
+        let currentPage = 1;
+
+        function displayProducts(page) {
+            productsContainer.innerHTML = '';
+            const start = (page - 1) * productsPerPage;
+            const end = start + productsPerPage;
+            const paginatedProducts = filteredProducts.slice(start, end);
+
+            paginatedProducts.forEach(product => productsContainer.appendChild(product));
+
+            updatePaginationControls(page);
+        }
+
+        function updatePaginationControls(page) {
+            paginationControls.innerHTML = '';
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+            if (page > 1) {
+                const prevBtn = document.createElement('span');
+                prevBtn.innerHTML = '&laquo;';
+                prevBtn.onclick = () => displayProducts(page - 1);
+                paginationControls.appendChild(prevBtn);
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('span');
+                pageBtn.innerText = i;
+                if (i === page) {
+                    pageBtn.style.fontWeight = 'bold';
+                } else {
+                    pageBtn.onclick = () => displayProducts(i);
+                }
+                paginationControls.appendChild(pageBtn);
+            }
+
+            if (page < totalPages) {
+                const nextBtn = document.createElement('span');
+                nextBtn.innerHTML = '&raquo;';
+                nextBtn.onclick = () => displayProducts(page + 1);
+                paginationControls.appendChild(nextBtn);
+            }
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const categoryFilter = document.getElementById('filter-category').value.toLowerCase();
+            const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+            const brandFilters = Array.from(document.querySelectorAll('.brand-filter:checked')).map(el => el.value.toLowerCase());
+            const colorFilters = Array.from(document.querySelectorAll('.color-filter:checked')).map(el => el.value.toLowerCase());
+
+            filteredProducts = products.filter(product => {
+                const productName = product.getAttribute('data-name').toLowerCase();
+                const productCategory = product.getAttribute('data-category').toLowerCase();
+                const productPrice = parseFloat(product.getAttribute('data-price'));
+                const productBrand = product.getAttribute('data-brand').toLowerCase();
+                const productColor = product.getAttribute('data-color').toLowerCase();
+
+                let isVisible = true;
+
+                if (searchTerm && !productName.includes(searchTerm)) {
+                    isVisible = false;
+                }
+
+                if (categoryFilter && categoryFilter !== productCategory) {
+                    isVisible = false;
+                }
+
+                if (productPrice < minPrice || productPrice > maxPrice) {
+                    isVisible = false;
+                }
+
+                if (brandFilters.length > 0 && !brandFilters.includes(productBrand)) {
+                    isVisible = false;
+                }
+
+                if (colorFilters.length > 0 && !colorFilters.includes(productColor)) {
+                    isVisible = false;
+                }
+
+                return isVisible;
+            });
+
+            sortProducts();  // Sort after filtering
+            displayProducts(1);  // Reset to first page after filtering
+        }
+
+        function sortProducts() {
+            const sortValue = document.getElementById('sort-options').value;
+
+            switch (sortValue) {
+                case 'price_low_to_high':
+                    filteredProducts.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
+                    break;
+                case 'price_high_to_low':
+                    filteredProducts.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
+                    break;
+                case 'new_arrivals':
+                    filteredProducts.sort((a, b) => new Date(b.getAttribute('data-date')) - new Date(a.getAttribute('data-date')));
+                    break;
+                case 'az':
+                    filteredProducts.sort((a, b) => a.getAttribute('data-name').localeCompare(b.getAttribute('data-name')));
+                    break;
+                case 'za':
+                    filteredProducts.sort((a, b) => b.getAttribute('data-name').localeCompare(a.getAttribute('data-name')));
+                    break;
+            }
+
+            displayProducts(currentPage);  // Update the displayed products after sorting
+        }
+
+        document.getElementById('search-bar').addEventListener('keyup', applyFilters);
+        document.getElementById('filter-category').addEventListener('change', applyFilters);
+        document.getElementById('min-price').addEventListener('change', applyFilters);
+        document.getElementById('max-price').addEventListener('change', applyFilters);
+        document.querySelectorAll('.brand-filter').forEach(checkbox => checkbox.addEventListener('change', applyFilters));
+        document.querySelectorAll('.color-filter').forEach(checkbox => checkbox.addEventListener('change', applyFilters));
+        document.getElementById('sort-options').addEventListener('change', sortProducts);
+
+        // Initial display
+        displayProducts(currentPage);
+    });
+
+</script>
+<script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phonopedia Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/logo-small.png' %}">
+    <style>
+        body {
+            background-color: #D8E1E8;
+            font-family: Arial, sans-serif;
+        }
+        .signup-container {
+            max-width: 600px;
+            margin: 100px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .signup-container h2 {
+            margin-bottom: 30px;
+            color: #124E66;
+        }
+        .form-control {
+            border-radius: 25px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .btn-primary {
+            background-color: #124E66;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background-color: #ffffff;
+            color: #124E66;
+            border: #124E66 solid;
+        }
+        .link-container {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+        }
+        .link-container a {
+            color: #124E66;
+            text-decoration: none;
+        }
+        .row .col-md-6 {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign UP</h2>
+        <div class="mb-3">
+            <img src="{% static 'images/logo.png' %}" alt="Phonopedia Logo">
+        </div>
+        <div class="mb-3">
+            <a href="/accounts/google/login/">
+            <button class="btn btn-outline-secondary w-100" style="border-radius: 25px;">
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google"> Log In with Google
+            </button></a>
+        </div>
+        <div class="mb-3">Or</div>
+        <form enctype="multipart/form-data" method="POST" action="{% url 'signup' %}">
+            {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="First name" required minlength="4" name="f_name">
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Last name" name="l_name" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="email" class="form-control" placeholder="email" required name="email">
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Phone" required minlength="10" name="phone" onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="User name" name="username" required minlength="3" onkeyup="if (/[^|a-z0-9_.]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9_.]+/g,'')"> 
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Referral code(Optional)" name="referral_code" minlength="10" maxlength="10" id="referral_code">
+                <span id="referral_status"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="password" class="form-control" placeholder="Password" name="password" required minlength="5" id="password" onkeyup="if (/[^|A-Za-z0-9!@#$%^&*(.)_]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9_.]+/g,'')">
+            </div>
+            <div class="col-md-6">
+                <input type="password" class="form-control" placeholder="Confirm password" required minlength="5" id="confirm_password" onkeyup="check() ">
+            </div>
+        </div>
+        <span id='message'></span>
+        {% if messages %}
+                {% for message in messages %}
+                    <div  style="color: red; text-align: center;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+        {% endif %}
+        <button class="btn btn-primary mt-4" type="submit" id="next">next</button>
+        <div class="link-container mt-4">
+            <a href="{% url 'signin' %}">Sign In ?</a>
+            <a href="{% url 'home' %}">Continue as guest ?</a>
+        </div>
+    </form>
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById('referral_code').addEventListener('keyup', function() {
+        const referralCode = this.value;
+        if (referralCode.startsWith('PH') && referralCode.length === 10) {
+            fetch(`/verify-referral-code/?code=${referralCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        document.getElementById('referral_status').innerText = 'Valid Code';
+                        sessionStorage.setItem('valid_referral_code', referralCode);  // Store code in session
+                    } else {
+                        document.getElementById('referral_status').innerText = 'Invalid Code';
+                    }
+                });
+        } else {
+            document.getElementById('referral_status').innerText = 'Invalid Format';
+        }
+    });
+</script>
+<script>
+    var check = function() {
+        if (document.getElementById('password').value ==
+          document.getElementById('confirm_password').value) {
+          document.getElementById('message').style.color = 'green';
+          document.getElementById('message').innerHTML = 'Passwords are matching';
+          document.getElementById('next').style.display = "block";
+        } else {
+          document.getElementById('message').style.color = 'red';
+          document.getElementById('message').innerHTML = 'Passwords are not matching';
+          document.getElementById('next').style.display = "none";
+        }
+    }
+</script>

@@ -1,0 +1,104 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Add product{% endblock %}
+{% block content %}
+    <div class="page-wrapper">
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title">
+                    <h4>Product Add</h4>
+                    <h6>Create new product</h6>
+                </div>
+            </div>
+            {% if messages%}
+                {% for message in messages%}
+                    <p style="color: blueviolet;">{{message}}</p>
+                {% endfor%}
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Product Name</label>
+                                    <input type="text" name="name" required id="name" onkeyup="validateInput()">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select class="select" name="category" required >
+                                        {% for category in categoryes%}
+                                        <option value="{{category.id}}">{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Sub Category</label>
+                                    <select class="select">
+                                        <option>Choose Sub Category</option>
+                                        <option>Fruits</option>
+                                    </select>
+                                </div>
+                            </div> -->
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Brand</label>
+                                        <select class="select" name="brand" required >
+                                            {% for brand in brands%}
+                                            <option value="{{brand.id}}">{{brand.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                        <label>Operating system</label>
+                                        <input type="text" name="operating_system" required onkeyup="if (/[^|A-Za-z0-9_. ]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9_. ]+/g,'')">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Processor</label>
+                                    <input type="text" name="processor" required onkeyup="if (/[^|A-Za-z0-9_. ]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9_. ]+/g,'')">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label>Screen size</label>
+                                    <input type="text" required name="screen_size" onkeyup="if (/[^|0-9.]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9.]+/g,'')">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea class="form-control" required minlength="5" name="description"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <button href="javascript:void(0);" class="btn btn-submit me-2" type="submit">Submit</button>
+                                <!-- <a href="productlist.html" class="btn btn-cancel">Cancel</a> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function validateInput() {
+            var input = document.getElementById("name").value;
+            input = input.trim();  // Remove leading and trailing whitespace
+            document.getElementById("name").value = input;
+            return true;  // Submit the form
+        }
+    </script>
+{% endblock %}
+
+

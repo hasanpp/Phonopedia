@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        @font-face {
+            font-family: 'DejaVu Sans';
+            src: url('{{ STATIC_URL }}fonts/DejaVuSans.ttf') format('truetype');
+        }
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .invoice-header img {
+            width: 150px;
+        }
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: right;
+        }
+        .invoice-details {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .invoice-details div {
+            width: 48%;
+        }
+        .invoice-details p {
+            margin: 5px 0;
+        }
+        .cost-summary {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .cost-summary h3 {
+            margin: 0;
+            text-align: right;
+            font-size: 20px;
+        }
+        .cost-summary table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .cost-summary table th,
+        .cost-summary table td {
+            padding: 8px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+        .cost-summary table th {
+            background-color: #f4f4f4;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            text-align: center;
+            color: #555;
+        }
+        .currency-symbol {
+            font-family: 'DejaVu Sans', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="invoice-header">
+            
+            <div class="invoice-title" >
+                <span style="color: #124e66;">Phono<span style="color: #ffffff; background-color: #555;">Pedia</span></span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                E-Commerce Invoice<br>
+                Invoice #: {{ order_item.order.id }}
+            </div>
+        </div>
+        <div class="invoice-details">
+            <div>
+                <strong>Bill to:</strong><br>
+                {{ order_item.order.delivery_address.name }}<br>
+                {{ order_item.order.delivery_address.phone }}<br>
+                {{ order_item.order.delivery_address.house_name }}, {{ order_item.order.delivery_address.road }}<br>
+                {{ order_item.order.delivery_address.place }}, {{ order_item.order.delivery_address.district }}<br>
+                {{ order_item.order.delivery_address.state }}, India<br>
+                {{ order_item.order.delivery_address.postal_code }}
+            
+                <strong>Invoice Date:</strong> {{ order_item.order.order_date }} <br>
+                <strong>Order  ID:</strong> {{ order_item.order.id }}<br>
+                <strong>Payment Method:</strong> {{ order_item.order.pyment_method }}<br>
+                <strong>Payment Status:</strong> {{ order_item.order.pyment_status }}<br>
+            </div>
+        </div>
+        <div class="cost-summary">
+            <h3>Cost Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Product Name</td>
+                        <td>{{ order_item.variant.product.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Unit Price</td>
+                        <td><span class="currency-symbol">Rs :</span> {{ order_item.unit_price }}</td>
+                    </tr>
+                    <tr>
+                        <td>Quantity</td>
+                        <td>{{ order_item.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Price</td>
+                        <td><span class="currency-symbol">Rs :</span> {{ order_item.price }}</td>
+                    </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <td>-<span class="currency-symbol">Rs :</span> {{ order_item.order.discount }}</td>
+                    </tr>
+                    <tr>
+                        <td>Delivery charge</td>
+                        <td><span class="currency-symbol">Rs :</span> 50</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grand Total</strong></td>
+                        <td><strong><span class="currency-symbol">Rs :</span> {{ order_item.order.total }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="footer">
+            <p>You will be automatically charged for any amount due.</p>
+        </div>
+    </div>
+</body>
+</html>

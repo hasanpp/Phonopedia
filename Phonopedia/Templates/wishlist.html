@@ -1,0 +1,68 @@
+{% extends 'bace.html' %}
+{% load static %}
+{% block title %}Wishlist{% endblock %}
+{% block content %}
+<div class="small-container">
+    <div class="row row-2">
+        <h2>Wishlist</h2>
+        <!-- <select>
+            <option>Default Sort</option>
+            <option>Sort By Price</option>
+            <option>Sort By Popularity</option>
+            <option>Sort By Rating</option>
+            <option>Sort By Sale</option>
+        </select> -->
+    </div> 
+</div>
+    <div class="row" style="display: flex; flex-wrap: wrap;  flex-basis: 20%;">
+
+        {% for wishlist in wishlists%}
+            <div class="col-4" style =" flex-basis: 20%;">
+                <a href="{% url 'variant_details' wishlist.variant.id %}">
+                    <img style="width: 250px; height: 250px;" src="{{wishlist.variant.image.url}}">
+                    <h4>{{wishlist.variant.product.name}}</h4>
+                    <div class="rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-o"></i>
+                    </div>
+                    {% if wishlist.variant.product.id in offerd_product_ides %}
+                        {% for p_offer in p_offers%}
+                            {% if p_offer.product.id == wishlist.variant.product.id %}
+                                <h5><s>₹{{wishlist.variant.price}}</s></h5>
+                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{p_offer.percentage}} % off !!</h5>
+                            {% endif %}
+                        {% endfor %}
+                    {% elif wishlist.variant.product.brand.id in offerd_brand_ides %}
+                        {% for b_offer in b_offers%}
+                            {% if b_offer.brand.id == wishlist.variant.product.brand.id %}
+                                <h5><s>₹{{wishlist.variant.price}}</s></h5>
+                                <h5 class="price_4" style="color: cadetblue; font-size: large;">!! {{b_offer.percentage}} % off !!</h5>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>₹{{wishlist.variant.price}}</p>
+                    {% endif %}
+                </a>
+                {%if wishlist.variant.quantity > 0%}
+                        <p style="color: chartreuse;">In stock {{wishlist.variant.quantity}} pice</p>
+                    {% elif not wishlist.variant.is_active%}
+                        <p style="color: burlywood;">Unavailable</p>
+                    {% elif wishlist.variant.quantity == 0%}
+                        <p style="color: red;">Out of stock</p>
+
+                    {% endif %}
+                    <br>
+                <div class="wish_cart">
+                    <button class="cart add-to-cart-btn" data-variant-id="{{ wishlist.variant.id }}">Add to cart</button>
+                    <a href="{% url 'remove_from_wishlist' wishlist.id %}"><button class="wishlist">remove from wishlist</button></a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+<br><br><br><br><br><br><br>
+<br><br><br>
+{% endblock %}

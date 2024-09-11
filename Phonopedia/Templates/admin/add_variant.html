@@ -1,0 +1,204 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Add Variants{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"/>
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Variants Add</h4>
+                <h6>Create new Variants</h6>
+            </div>
+        </div>
+        {% if messages%}
+            {% for message in messages%}
+                <p style="color: blueviolet;">{{message}}</p>
+            {% endfor%}
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Color Code</label>
+                                <input type="text" name="color" required onkeyup="if (/[^|A-Za-z0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|a-z0-9]+/g,'')">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="text" name="quantity" required onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                    <label>Price</label>
+                                    <input type="text" name="price" required onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Ram</label>
+                                <input type="text" name="ram" required onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Rom</label>
+                                <input type="text" required name="rom" onkeyup="if (/[^|0-9]+/g.test(this.value)) this.value = this.value.replace(/[^|0-9]+/g,'')">
+                            </div>
+                        </div>
+                        <!-- Primary Image Section -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Primary Image</label>
+                                <input type="file" id="imageInput" name="image" accept="image/*" required>
+                                <div class="col-md-12" style="display: flex; flex-wrap: wrap;">
+                                    <img class="col-md-6" id="imagePreview" style="display:none; max-width: 100%;" />
+                                    <div class="col-md-6" id="cropContainer" style="display:none;">
+                                        <img   id="croppableImage" style="max-width: 100%;" />
+                                        <button type="button" id="cropButton" class="btn btn-primary col-md-12">Crop Primary Image</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Images Section -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Secondary Images</label>
+                                <input type="file" id="secondaryImageInput" name="secondary_images" accept="image/*" multiple>
+                                <div class="col-md-6" id="secondaryImagesPreview" style="display:none;"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <button href="javascript:void(0);" class="btn btn-submit me-2" type="submit">Submit</button>
+                            <!-- <a href="productlist.html" class="btn btn-cancel">Cancel</a> -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const secondaryImageInput = document.getElementById('secondaryImageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const croppableImage = document.getElementById('croppableImage');
+    const cropContainer = document.getElementById('cropContainer');
+    const cropButton = document.getElementById('cropButton');
+    const secondaryImagesPreview = document.getElementById('secondaryImagesPreview');
+    let cropper;
+
+    // Handle Primary Image Cropping
+    imageInput.addEventListener('change', function() {
+        const file = imageInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                imagePreview.style.display = 'block';
+                croppableImage.src = event.target.result;
+                cropContainer.style.display = 'block';
+
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                cropper = new Cropper(croppableImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    scalable: false,
+                    zoomable: false,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    cropButton.addEventListener('click', function() {
+        const canvas = cropper.getCroppedCanvas();
+        if (canvas) {
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], 'cropped_image.png', { type: "image/png" });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                imageInput.files = dataTransfer.files;
+                imagePreview.src = canvas.toDataURL();
+                cropContainer.style.display = 'none';
+            });
+        }
+    });
+
+    // Handle Secondary Image Cropping
+    secondaryImageInput.addEventListener('change', function() {
+        const files = secondaryImageInput.files;
+        secondaryImagesPreview.innerHTML = '';  // Clear previous previews
+        secondaryImagesPreview.style.display = 'block';
+
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const previewWrapper = document.createElement('div');
+                const secondaryImg = document.createElement('img');
+                secondaryImg.src = event.target.result;
+                secondaryImg.style.maxWidth = '100%';
+                secondaryImg.style.marginBottom = '10px';
+                previewWrapper.appendChild(secondaryImg);
+
+                const cropContainerSec = document.createElement('div');
+                const croppableSecImage = document.createElement('img');
+                croppableSecImage.src = event.target.result;
+                croppableSecImage.style.maxWidth = '100%';
+                cropContainerSec.appendChild(croppableSecImage);
+
+                const cropButtonSec = document.createElement('button');
+                cropButtonSec.type = 'button';
+                cropButtonSec.className = 'btn btn-primary';
+                cropButtonSec.textContent = 'Crop Image';
+                cropContainerSec.appendChild(cropButtonSec);
+
+                previewWrapper.appendChild(cropContainerSec);
+                secondaryImagesPreview.appendChild(previewWrapper);
+
+                const cropperSec = new Cropper(croppableSecImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                });
+
+                cropButtonSec.addEventListener('click', function() {
+                    const canvasSec = cropperSec.getCroppedCanvas();
+                    if (canvasSec) {
+                        canvasSec.toBlob(function(blob) {
+                            const croppedFile = new File([blob], `cropped_secondary_image_${index}.png`, { type: "image/png" });
+                            const dataTransfer = new DataTransfer();
+                            const allFiles = secondaryImageInput.files;
+                            Array.from(allFiles).forEach((originalFile, fileIndex) => {
+                                if (fileIndex !== index) {
+                                    dataTransfer.items.add(originalFile);
+                                } else {
+                                    dataTransfer.items.add(croppedFile);
+                                }
+                            });
+                            secondaryImageInput.files = dataTransfer.files;
+
+                            secondaryImg.src = canvasSec.toDataURL();
+                            cropContainerSec.style.display = 'none';
+                        });
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{% endblock %}

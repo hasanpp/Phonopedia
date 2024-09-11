@@ -1,0 +1,177 @@
+{% extends 'admin/layout.html' %}
+{% load static %}
+{% block title %}Order deltails{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Purchase Edit</h4>
+                <h6>Edit/Update Purchase</h6>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Brand Name</label>
+                            <div class="row">
+                                <div class="col-lg-10 col-sm-10 col-10">
+                                    <select class="select">
+                                        <option>{{item.variant.product.brand.name}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-sm-2 col-2 ps-0">
+                                    <div class="add-icon">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Purchase Date </label>
+                            <div class="input-groupicon">
+                                <input type="text" placeholder="DD-MM-YYYY"  value="{{order.order_date}}">
+                                <div class="addonset">
+                                    <img src="{% static 'img_admin/icons/calendars.svg' %}" alt="img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Product Names</label>
+                            <select class="select">
+                                    <option>{{item.variant.product.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>QTY</th>
+                                    <th class="text-end">Unit Cost(₹)</th>
+                                    <th class="text-end">Total Cost (₹) </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="productimgname">
+                                        <a class="product-img">
+                                            <img src="{{item.variant.image.url}}" alt="product">
+                                        </a>
+                                        <a href="javascript:void(0);">{{item.variant.product.name}}</a>
+                                    </td>
+                                    <td>{{item.quantity}}</td>
+                                    <td class="text-end">{{item.unit_price}}</td>
+                                    <td class="text-end">{{item.price}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 float-md-right">
+                        <div class="total-order">
+                            <ul>
+                                <li>
+                                    <h4>Order Tax</h4>
+                                    <h5>₹ {{order.tax}}</h5>
+                                </li>
+                                <li>
+                                    <h4>Discount</h4>
+                                    <h5>₹ {{order.discount}}</h5>
+                                </li>
+                                <li>
+                                    <h4>Shipping</h4>
+                                    <h5>₹ {{order.delivery_charge}}</h5>
+                                </li>
+                                <li class="total">
+                                    <h4>Grand Total</h4>
+                                    <h5>₹ {{order.total}}</h5>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <form method="post" style="display: flex; flex-wrap: wrap;">
+                    {% csrf_token %}
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Order Tax</label>
+                            <input type="text" value="{{order.tax}}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Discount</label>
+                            <input type="text" value="{{order.discount}}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Shipping</label>
+                            <input type="text" value="0">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="select" name="status">
+                                {% if item.status == 'Order placed'%}
+                                    <option value="Order placed" selected>Order placed</option>
+                                    <option value="Preparing for dispatch">Preparing for dispatch</option>
+                                    <option value="Dispatched">Dispatched</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Out for delivery">Out for delivery</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                {% elif item.status == 'delivered'%}
+                                    <option value="delivered" selected>Delivered</option>
+                                    <option value="returned">Returned</option>
+                                {% elif item.status == 'returned'%}
+                                    <option value="returned" selected>Returned</option>
+                                {% elif item.status == 'cancelled'%}
+                                    <option value="cancelled" selected>Cancelled</option>
+                                    <option value="Order placed">Order placed</option>
+                                {% else %}
+                                    <option value="Preparing for dispatch">Preparing for dispatch</option>
+                                    <option value="Dispatched">Dispatched</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Out for delivery">Out for delivery</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label><ADdress></ADdress></label>
+                            <textarea class="form-control">{{order.delivery_address.name}}
+{{order.delivery_address.house_name}}, {{order.delivery_address.road}}, {{order.delivery_address.place}}
+{{order.delivery_address.city}}, {{order.delivery_address.district}}, {{order.delivery_address.state}}, 
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button href="javascript:void(0);" class="btn btn-submit me-2" type="Submit">Submit</button>
+                        <a href="{% url 'view_orders_admin' %}" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
