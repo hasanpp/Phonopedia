@@ -1,0 +1,1 @@
+ssh -i "new.pem" ubuntu@ec2-13-239-138-212.ap-southeast-2.compute.amazonaws.com

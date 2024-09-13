@@ -1,0 +1,32 @@
+
+to visit 
+ssh -i "new.pem" ubuntu@ec2-13-239-138-212.ap-southeast-2.compute.amazonaws.com
+
+Postgresql
+
+password: H1a2s3a4n5#
+
+username :hasanpp
+
+email : hasanpp02@gmail.com
+
+
+source env/bin/activate
+
+sudo service nginx restart
+
+gunicorn --bind 0.0.0.0:9090 Phonopedia.wsgi
+
+
+
+cd /etc/nginx/sites-enabled/
+
+cd /etc/nginx/sites-available/
+
+
+for error in gunicorn --bind
+
+
+sudo lsof -i :9090
+sudo kill -9 <PID>
+

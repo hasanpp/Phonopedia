@@ -14,7 +14,42 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <style>
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+    
+        .avatar {
+            border-radius: 50%;
+        }
+    
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+        }
+    
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+    
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+    
+        .avatar-container:hover .dropdown-content {
+            display: block;
+        }
+    </style>
 </head>
 
 <body >
@@ -30,23 +65,27 @@
                         <li><a href="{% url 'home' %}">Home</a></li>
                         <li><a href="{% url 'list_products' %}">Products</a></li>
                         <li><a href="{% url 'view_orders' %}">Orders</a></li>
-                        <li><a href="{% url 'wishlist' %}">wishlist</a></li>
+                        <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
                     </ul>
                 </nav>
                 <a href="{% url 'view_cart' %}"><img src="{% static 'images/cart.svg' %}" width="30px" height="30px"></a>&nbsp; &nbsp;
-                <a href="{% url 'account_details' %}"><img src="{% static 'images/User.svg' %}" width="30px" height="30px"></a>&nbsp; &nbsp;
-                {% if user.is_authenticated %}
-                <a href="{% url 'signout'%}" style="color: red;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-                  </svg>
-                </a>
-                {% endif %}
+    
+                <!-- Avatar with dropdown -->
+                <div class="avatar-container" onclick="toggleDropdown()">
+                    <img src="{% static 'images/User.svg' %}" width="30px" height="30px" class="avatar" id="avatar">
+                    <div class="dropdown-content" id="dropdown">
+                        <a href="{% url 'account_details' %}">View Profile</a>
+                        {% if user.is_authenticated %}
+                            <a href="#" id="logout" style="color: red;"><i class="fa fa-sign-out"></i> &nbsp;Logout </a>
+                        {% endif %}
+                    </div>
+                </div>
+    
                 <img src="{% static 'images/menu.png' %}" class="menu-icon" onclick="menutoggle()">
             </div>
         </div>
     </div>
+    
     
     {% block content %}
     
@@ -104,6 +143,53 @@
     </div>
 
     <!-- javascript -->
+    <script>
+        document.getElementById('logout').addEventListener('click', function (e) {
+            e.preventDefault();  // Prevent the default anchor behavior
+    
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to log out?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#124e66',
+                confirmButtonText: 'Yes, log out!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the logout URL
+                    window.location.href = "{% url 'signout' %}";
+                } else {
+                    Toastify({
+                        text: "Logout canceled.",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "green",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            });
+        });
+    
+        function toggleDropdown() {
+            var dropdown = document.getElementById("dropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+    
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.avatar')) {
+                var dropdown = document.getElementById("dropdown");
+                if (dropdown.style.display === "block") {
+                    dropdown.style.display = "none";
+                }
+            }
+        }
+    </script>
+
 
     <script>
         var MenuItems = document.getElementById("MenuItems");
