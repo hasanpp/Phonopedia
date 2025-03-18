@@ -211,6 +211,13 @@ def cancel_order(request,order_item_id):
     order_item.save()
     return redirect(view_orders)
 
+def return_order(request,order_item_id):
+    create_wallet(request.user)
+    order_item = Order_items.objects.get(pk=order_item_id)
+    order_item.status = 'Return pending'
+    order_item.save()
+    return redirect(view_orders)
+
 def delete_address(request,address_id):
     address = Address.objects.get(pk=address_id)
     address.delete()

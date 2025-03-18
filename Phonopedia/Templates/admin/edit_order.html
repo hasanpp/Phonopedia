@@ -142,6 +142,9 @@
                                 {% elif item.status == 'cancelled'%}
                                     <option value="cancelled" selected>Cancelled</option>
                                     <option value="Order placed">Order placed</option>
+                                {% elif item.status == 'Return pending'%}
+                                    <option value="Return pending" selected>Return pending</option>
+                                    <option value="returned" >Returned</option>
                                 {% else %}
                                     <option value="Preparing for dispatch">Preparing for dispatch</option>
                                     <option value="Dispatched">Dispatched</option>
