@@ -5,7 +5,7 @@
             "use":"@vercel/python",
             "config":{
                 "maxLambadaSize":"30mb",
-                "runtime":"python3.12"
+                "runtime":"python3.11"
             }
         }
     ],
