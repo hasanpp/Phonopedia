@@ -1,7 +1,7 @@
 {
     "builds":[
         {
-            "src":"host/wsgi.py",
+            "src":"Phonopedia/wsgi.py",
             "use":"@vercel/python",
             "config":{
                 "maxLambadaSize":"30mb",
@@ -12,7 +12,7 @@
     "routes":[
         {
             "src":"/(.*)",
-            "dest":"host/wsgi.py"
+            "dest":"Phonopedia/wsgi.py"
         }
     ]
 }
